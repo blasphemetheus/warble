@@ -142,9 +142,10 @@ function displayListAccounts(platToken) {
 
       // makin the form we'll use
       let f = document.createElement('form');
-      f.setAttribute('id', 'selectAccountForm')
-      f.setAttribute('action', '/do_thing.js');
-      f.setAttribute('class', 'accountsForm')
+      f.setAttribute('id', 'selectAccountForm');
+      f.setAttribute('action', '/reporting.html');
+      f.setAttribute('onsubmit', 'alert("hello")');
+      f.setAttribute('class', 'accountsForm');
 
       document.body.appendChild(f);
 
