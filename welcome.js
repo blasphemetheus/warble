@@ -1,10 +1,91 @@
 // A Javascript File that funs through all the javascript functionality of the welcome page.
 // Currently does not use JQUERY, does use AJAX. TODO probably needs better ordering system
 
+
+// ---------------------- cookie stuff, stuff that runs when the js is loaded ----------------- //
+
+
+logCookies();
+
+// pull out string of JSON with name 'SignIn' from within all the cookies
+// if there isn't any such thing, signInCookie gets set to ""
+
+//logic for whether cookie is there or not
+if (getCookie('SignIn') == "") { // there should be no meaningful cookie here
+  console.log('first branch - no signIn');
+  // signInFo = "";
+
+  // just do this to gen html  (adds a sign In button under 'hidden' div
+  displayLinkToSignIn();
+
+
+} else if (getCookie('WhichAccount') == "") { // there should be a signIn cookie BUT NO listAccounts cookie
+  console.log('second branch - yes signin, no whichAccount');
+
+  signInFo = JSON.parse(getCookie('SignIn'));
+
+
+  // since we have a cookie, lets list accounts
+  displayListAccounts(signInFo.token);
+
+} else { // there should be a signin cookie AND a listAccounts cookie
+  console.log('third branch - yes signin, yes whichAccount');
+
+  whichAccountFo = JSON.parse(whichAccountCookie);
+
+  displayListTasks(whichAccountFo);
+}
+
+
+if (sessionStorage.getItem('test') == "") {
+  console.log('sessionStorage(test)', sessionStorage.getItem('test'));
+} else {
+  console.log('there is no sessionStorage for test');
+}
+
+// sessionStorage.setItem('AccountsJSON', JSON.stringify(buildingAccountJSON));
+
+// ... -------------------- ... //
+
+//
+/// --- after all functions, this is where we apply eventListeners
+//
+
+// // MAKE THE buttons do the boom thing
+// var buttons = document.querySelectorAll('button');
+// // run through every button in array, add an eventListener for click that calls boom
+// for (var i = 0; i < buttons.length; i++) {
+//   buttons[i].addEventListener('click', boom);
+// }
+
+
+console.log('PAYATTENTIONHERE');
+exampleArray = ['hell', 'is', 'irony'];
+
+startChooseTasks(exampleArray, 'BOFA');
+
+
+
+/* ONLY FUNCTIONS FROM HERE ON OUT */
+
+
+
+//function logs out all the cookies to console
+function logCookies() {
+  console.log("SignIn cookie: ", getCookie('SignIn'));
+  console.log("WhichAccount cookie: ", getCookie('WhichAccount'));
+}
+
+
+
 // ---------------------- memory functionality ----------------- //
 // function that makes sure the current arrayAccounts (as given) is saved in sessionStorage
 // along with the selected one, overwrites previous sessionStorage string if there is one
 function saveArrayAccounts(arrAccounts, currentAccountPIDString) {
+  arrAccounts = [1, 2, 3];
+
+  currentAccountPIDString = "myPID";
+
   /*Form -----    {selectedAccount : "pidOfSelectedAccount", listOfAccounts : [{accountObj1},{accountObj2}] }    */
   // this is the format of the JSON we will have in sessionStorage
   // sets the JSON we'll be using to
@@ -12,9 +93,36 @@ function saveArrayAccounts(arrAccounts, currentAccountPIDString) {
     currentAccount: currentAccountPIDString,
     availableAccounts: arrAccounts
   };
+  // buildingAccountJSON = JSON.parse(buildingAccountJSON);
   console.log('Our Build AccountJSON', JSON.stringify(buildingAccountJSON));
   sessionStorage.setItem('AccountsJSON', JSON.stringify(buildingAccountJSON));
   console.log('Put AccountsJSON in sessionStorage');
+}
+
+
+function removeElement(elementId) {
+  // Removes an element from the document
+  var element = document.getElementById(elementId);
+  element.parentNode.removeChild(element);
+}
+
+// function that clears the previous stuff (deletes the form with the id selectAccountForm out)
+function clearStuff() {
+  var stuff = document.getElementById('selectAccountForm');
+  stuff.parentNode.removeChild(stuff);
+  var content = document.getElementById('content');
+  content.parentNode.removeChild(content);
+}
+
+// displays the next step (which task do you want to do with this stuff?)
+function displayWhichTask() {
+  let accountsJSON = sessionStorage.getItem('AccountsJSON');
+  accountsJSON = JSON.parse(accountsJSON);
+  if (accountsJSON == null) {
+    console.log('reached null condition for sessionStorage');
+  }
+
+  console.log('accountsJSON', accountsJSON);
 }
 
 // ---------------------- END memory functionality ----------------- //
@@ -52,50 +160,13 @@ function startChooseTasks(arrayAccounts, selectedAccountPID) {
   // document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
+// example function, to be activated by pushing a button, returns false to not refresh
 function doSomething() {
-  alert('Form submitted');
+  console.log('Did Something');
   return false;
 }
 /// The other method for form submit
 
-console.log("baseURI: ", document.baseURI);
-
-// pull out string of JSON with name 'SignIn' from within all the cookies
-// if there isn't any such thing, signInCookie gets set to ""
-let signInCookie = getCookie('SignIn');
-let whichAccountCookie = getCookie('WhichAccount');
-
-console.log("SignIn cookie: ", signInCookie);
-console.log("WhichAccount cookie: ", whichAccountCookie);
-
-//logic for whether cookie is there or not
-if (signInCookie == "") { // there should be no meaningful cookie here
-  console.log('first branch - no signIn');
-  // signInFo = "";
-
-  // just do this to gen html  (adds a sign In button under 'hidden' div
-  displayLinkToSignIn();
-
-
-} else if (whichAccountCookie == "") { // there should be a signIn cookie BUT NO listAccounts cookie
-  console.log('second branch - yes signin, no whichAccount');
-
-  signInFo = JSON.parse(signInCookie);
-
-
-  // since we have a cookie, lets list accounts
-  displayListAccounts(signInFo.token);
-
-} else { // there should be a signin cookie AND a listAccounts cookie
-  console.log('third branch - yes signin, yes whichAccount');
-
-  whichAccountFo = JSON.parse(whichAccountCookie);
-
-  displayListTasks(whichAccountFo);
-}
-
-
-// ... -------------------- ... //
 
 
 // given a token, list the accounts linked to this token, display appropriate messaging if token is invalid
@@ -144,7 +215,7 @@ function displayListAccounts(platToken) {
       let f = document.createElement('form');
       f.setAttribute('id', 'selectAccountForm');
       f.setAttribute('action', '/reporting.html');
-      f.setAttribute('onsubmit', 'alert("hello")');
+      f.setAttribute('onsubmit', 'saveArrayAccounts(); clearStuff(); displayWhichTask();');
       f.setAttribute('class', 'accountsForm');
 
       document.body.appendChild(f);
@@ -186,16 +257,18 @@ function displayListAccounts(platToken) {
       document.getElementById('selectAccountForm').appendChild(sub);
 
 
-
-      let exampleF = document.createElement('form');
-      exampleF.setAttribute('onsubmit', 'return doSomething();');
-      exampleF.setAttribute('class', 'my-form');
-      exampleF.setAttribute('id', 'form');
-      exampleF.innerHTML = '<input type="submit" value="Submit">';
-
-      document.body.appendChild(exampleF);
+      // -------- SUBMIT BUTTON JUST FOR KICKS
+      // let exampleF = document.createElement('form');
+      // exampleF.setAttribute('onsubmit', 'return doSomething();');
+      // exampleF.setAttribute('class', 'my-form');
+      // exampleF.setAttribute('id', 'form');
+      // exampleF.innerHTML = '<input type="submit" value="Submit">';
+      //
+      // document.body.appendChild(exampleF);
+      // --------- END SUBMIT BUTTON JUST FOR KICKS
 
       // f.innerHTML =
+
 
 
       // let d = document.createElement('div');
@@ -303,20 +376,3 @@ function boom() {
   paragraph.textContent = 'boom!';
   document.getElementById('content').appendChild(paragraph);
 }
-
-//
-/// --- after all functions, this is where we apply eventListeners
-//
-
-// // MAKE THE buttons do the boom thing
-// var buttons = document.querySelectorAll('button');
-// // run through every button in array, add an eventListener for click that calls boom
-// for (var i = 0; i < buttons.length; i++) {
-//   buttons[i].addEventListener('click', boom);
-// }
-
-
-console.log('PAYATTENTIONHERE');
-exampleArray = ['hell', 'is', 'irony'];
-
-startChooseTasks(exampleArray, 'BOFA');
