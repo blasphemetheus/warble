@@ -1,28 +1,93 @@
+// returns the thing stored at SignIn in sessionStorage, returns null if null
+function accessSignIn() {
+  return sessionStorage.getItem("SignIn");
+}
+
+// returns whether you are signed in (whether sessionStorage has the key value pair for SignIn or not),
+// returns false if null, true if not
+function isSignedIn() {
+  if (accessSignIn() == null) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 // a function that takes a name and a message (both strings is the assumption and signs you in with those)
 // it makes a session cookie to represent sign in
 function signIn(message) {
-  console.log("the thing to BE PUT INTO A COOKIE COOKIE COOKIIE", message);
-  sessionCookie("SignIn", message);
-}
-
-// makes a generic cookie with no additional parameters given a name and message
-function sessionCookie(name, value) {
-  document.cookie = name + "=" + value;
-}
-
-// clears the selected cookie on session end
-function deleteCookie(name) {
-  document.cookie = name + "=" + ";" + "expires=Thu, 01 Jan 1970 00:00:01 GMT";
+  console.log("Signing In - Message being stored in sessionStorage at SignIn: ", message);
+  sessionStorage.setItem("SignIn", message);
 }
 
 // deletes the signIn cookie and refreshes the page
 function signOut() {
-  console.log("signing out - deleting cookie");
-  deleteCookie("SignIn");
+  console.log("Signing out - clearing sessionStorage at SignIn");
+  sessionStorage.removeItem("SignIn"); //(or if that doesn't work sessionStorage.clear(), deletes all sessionStorage stuff)
   // refresh to make it stick
   // (true makes it reload from server, false would make it reload from cache)
   document.location.reload(true);
 }
+
+// ----------------------------
+// accessAccount, enterAccount, exitAccount
+
+// returns the thing stored at Account in sessionStorage, returns null if null
+function accessAccount() {
+  return sessionStorage.getItem("Account");
+}
+
+// returns whether you are in an account or not, false if sessionStorage for Account is null, true if not
+function isInAccount() {
+  if (accessAccount() == null) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+// stores what is passed in, in session storage under Account key
+function enterAccount(acct) {
+  console.log("Entering Account - Message being stored in sessionStorage at Account: ", acct);
+  sessionStorage.setItem("Account", acct);
+}
+
+// clears memory of account in session storage, reloads page
+function exitAccount() {
+  console.log("Exiting Account - clearing sessionStorage at Account");
+  sessionStorage.removeItem("Account");
+  document.location.reload(true);
+}
+
+// ----------------------------
+
+// accesses what is stored at Task in sessionStorage
+function accessTask() {
+  return sessionStorage.getItem("Task");
+}
+
+// returns whether you are in a task or not, false if sessionStorage for Task is null, true if not
+function isInTask() {
+  if (accessTask() == null) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+// stores what is passed in, in session storage under Task key
+function enterTask(mem) {
+  console.log("Entering Task - Mem being stored at 'Task': ", mem);
+  sessionStorage.setItem("Task", mem);
+}
+
+//clears memory of task in session storage, reloads page
+function exitTask() {
+  console.log("Exiting Task - clearing sessionStorage at Task");
+  sessionStorage.removeItem("Task");
+  document.location.reload(true);
+}
+
 
 
 /* FROM W3W3SCHOOLS */

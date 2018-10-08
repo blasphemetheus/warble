@@ -6,21 +6,35 @@
   <script src="session.js"></script>
 
   <script>
-    checkCookie();
+    checkSeshStorage();
 
-    function checkCookie() {
-      var signInCookie = getCookie('SignIn');
-      // if the cookie var we just made isn't an empty string
-      if (signInCookie != "") {
-        console.log("sending you to welcome cause you had a non-empty signIn cookie");
-        // do thing that shows you've been there before, in this case, redirect to welcome
-        window.location.href = "welcome.html";
-      } else {
-        console.log("sending you to login cause you had an empty signIn cookie or had no such cookie");
+    // checks session storage
+    function checkSeshStorage() {
+      // if the session storage item at SignIn is null
+      if (sessionStorage.getItem('SignIn') == null) {
+        console.log("No SignIn in sessionStorage - Redirecting you to login.html");
         window.location.href = "login.html";
-      } // ends else dealing with signInCookie (when it's "")
+      } else {
+        console.log('Found SignIn in sessionStorage - Redirecting you to welcome.html');
+        window.location.href = "welcome.html";
+      }
+    }
 
-    } // ends checkCookie fn
+    // checkCookie();
+    //
+    // function checkCookie() {
+    //   var signInCookie = getCookie('SignIn');
+    //   // if the cookie var we just made isn't an empty string
+    //   if (signInCookie != "") {
+    //     console.log("sending you to welcome cause you had a non-empty signIn cookie");
+    //     // do thing that shows you've been there before, in this case, redirect to welcome
+    //     window.location.href = "welcome.html";
+    //   } else {
+    //     console.log("sending you to login cause you had an empty signIn cookie or had no such cookie");
+    //     window.location.href = "login.html";
+    //   } // ends else dealing with signInCookie (when it's "")
+    //
+    // } // ends checkCookie fn
 
   </script>
 </head>

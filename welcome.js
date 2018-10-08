@@ -4,44 +4,62 @@
 
 // ---------------------- cookie stuff, stuff that runs when the js is loaded ----------------- //
 
-
+logSession();
 logCookies();
 
 // pull out string of JSON with name 'SignIn' from within all the cookies
 // if there isn't any such thing, signInCookie gets set to ""
 
 //logic for whether cookie is there or not
-if (getCookie('SignIn') == "") { // there should be no meaningful cookie here
-  console.log('first branch - no signIn');
-  // signInFo = "";
-
-  // just do this to gen html  (adds a sign In button under 'hidden' div
+if (isSignedIn() == false) { // No, not signed in
+  console.log('WELCOME - Logic Branch - No SignIn');
+  // just do this to gen html  (adds a SignIn button under 'hidden' div
   displayLinkToSignIn();
+} else if (isInAccount() == false) { // Yes - signedIn, but NOT in an Account
+  console.log('WELCOME - Logic Branch - Yes SignIn, No Account');
+  // since we don't have an accounts storage item , lets list accounts
 
+  // lets parse the signIn Object we put in sessionStorage previously
+  signInFo = JSON.parse(accessSignIn());
 
-} else if (getCookie('WhichAccount') == "") { // there should be a signIn cookie BUT NO listAccounts cookie
-  console.log('second branch - yes signin, no whichAccount');
+  // rn we only need the token part of the stached object, so lets pull that out
+  token = signInFo.token;
 
-  signInFo = JSON.parse(getCookie('SignIn'));
+  // display the prompt for choosing an account, passing in the token we need
+  displayListAccounts(token);
 
+} else if (isInTask() == false) { // Yes - signIn, Yes - Account, No - Task
+  console.log('WELCOME - Logic Branch - Yes SignIn, Yes Account, No Task');
 
-  // since we have a cookie, lets list accounts
-  displayListAccounts(signInFo.token);
+  // lets parse the signIn Object we put in sessionStorage previously
+  signInFo = JSON.parse(accessSignIn());
+  // rn we only need the token part of the stached object, so lets pull that out
+  token = signInFo.token;
 
-} else { // there should be a signin cookie AND a listAccounts cookie
-  console.log('third branch - yes signin, yes whichAccount');
+  // lets parse the account Object we put in sessionStorage before
+  accountObject = JSON.parse(accessAccount());
 
-  whichAccountFo = JSON.parse(whichAccountCookie);
+  // display the prompt for choosing a task (passing in an accountObject and token)
+  displayWhichTask(accountObject, token);
 
-  displayListTasks(whichAccountFo);
+} else { // Yes - signin, Yes - Account, Yes - Task
+  console.log('WELCOME - Logic Branch - Yes SignIn, Yes Account, Yes Task');
+
+  // just some reporting yo
+  console.log('signin', isSignedIn());
+  console.log('inaccount', isInAccount());
+  console.log('intask', isInTask());
+
+  // make sure all this stuff is saved in sessionStorage ???
+  // to catch any weird errors, just check that these things
+  if (isSignedIn() && isInAccount() && isInTask()) {
+    // redirect to warble.js, which is where we will do tasks. For now only add an allowedValue to Shows
+    window.location.href = 'warble.js';
+  } else { // if you got here in the ifs, I don't know what went wrong, logic or my brain has broken
+    alert('Yo something DRASTIC went wrong, check console for logs ');
+  }
 }
 
-
-if (sessionStorage.getItem('test') == "") {
-  console.log('sessionStorage(test)', sessionStorage.getItem('test'));
-} else {
-  console.log('there is no sessionStorage for test');
-}
 
 // sessionStorage.setItem('AccountsJSON', JSON.stringify(buildingAccountJSON));
 
@@ -76,6 +94,17 @@ function logCookies() {
   console.log("WhichAccount cookie: ", getCookie('WhichAccount'));
 }
 
+// function you can call that spits out all the SessionStorage stuff I'm dealing with
+function logSession() {
+  let act = accessAccount();
+  let signIn = accessSignIn();
+  let task = accessTask();
+
+  console.log('SignIn Storage: ', signIn);
+  console.log('Account Storage: ', act);
+  console.log('Task Storage: ', task);
+}
+
 
 
 // ---------------------- memory functionality ----------------- //
@@ -95,10 +124,10 @@ function saveArrayAccounts(arrAccounts, currentAccountPIDString) {
   };
   // buildingAccountJSON = JSON.parse(buildingAccountJSON);
   console.log('Our Build AccountJSON', JSON.stringify(buildingAccountJSON));
-  sessionStorage.setItem('AccountsJSON', JSON.stringify(buildingAccountJSON));
+  // sessionStorage storing Account
+  enterAccount(JSON.stringify(buildingAccountJSON));
   console.log('Put AccountsJSON in sessionStorage');
 }
-
 
 function removeElement(elementId) {
   // Removes an element from the document
@@ -114,9 +143,9 @@ function clearStuff() {
   content.parentNode.removeChild(content);
 }
 
-// displays the next step (which task do you want to do with this stuff?)
+// displays the next step (which task do you want to do with a token and an account?)
 function displayWhichTask() {
-  let accountsJSON = sessionStorage.getItem('AccountsJSON');
+  let accountsJSON = accessAccount();
   accountsJSON = JSON.parse(accountsJSON);
   if (accountsJSON == null) {
     console.log('reached null condition for sessionStorage');
@@ -130,7 +159,7 @@ function displayWhichTask() {
 // Does three things:
 // - 1) save in sessionStorage: accounts you have access to, your current account PID
 // - 2) clear out html of the listAccounts form, if there's stuff in content, clear it out too
-// - 3) Initiate displayListTasks, or display button that initiates it onclick
+// - 3) Initiate displayWhichTask, or display button that initiates it onclick
 // clears the html of random crap from before (the stuff in content), might even reload
 function startChooseTasks(arrayAccounts, selectedAccountPID) {
 
