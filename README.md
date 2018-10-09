@@ -17,3 +17,6 @@ php -S localhost:<port-number>
 Right now this tool doesn't do much, the idea right now is to make it do the one thing it needs to with a minimum of fuss.
 Then later features can be added if so desired (because there's a bunch of things we use MPX to do that could be done easier).
 For instance, there's some Cue Point stuff which might be more useful to do not in MPX.
+
+
+[Sketch going along with this project](sketch.png)
