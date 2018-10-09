@@ -1,3 +1,12 @@
+// if you're already signed in you can't sign in again until you log out silly
+if (isSignedIn() == true) {
+  window.location.href = 'welcome.html';
+} else {
+  // if you aren't signed in, clears all the rest of the sessionStorage stuff
+  sessionStorage.clear();
+}
+
+
 var numAttempts = document.querySelector('.numAttempts');
 var lastAttempt = document.querySelector('.lastAttempt');
 var errorCase = document.querySelector('.errorCase');
@@ -107,6 +116,7 @@ function requestToken(username, password, encodedString) {
       } else {
         console.log('oops I guess I don\'t understand the random fn');
       }
+      // end of random section
 
       // TODO make this countdown more advanced, have a countdown and write a function that adds one to the countdown displayed
       //wait 3 seconds with countdown
