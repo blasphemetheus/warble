@@ -115,9 +115,6 @@ function logSession() {
 // function that makes sure the current arrayAccounts (as given) is saved in sessionStorage
 // along with the selected one, overwrites previous sessionStorage string if there is one
 function saveArrayAccounts(arrAccounts, currentAccountPIDString) {
-  arrAccounts = [1, 2, 3];
-
-  currentAccountPIDString = "myPID";
 
   /*Form -----    {selectedAccount : "pidOfSelectedAccount", listOfAccounts : [{accountObj1},{accountObj2}] }    */
   // this is the format of the JSON we will have in sessionStorage
@@ -163,13 +160,16 @@ function displayWhichTask() {
 
 // Does three things:
 // - 1) save in sessionStorage: accounts you have access to, your current account PID
+
+
+
 // - 2) clear out html of the listAccounts form, if there's stuff in content, clear it out too
 // - 3) Initiate displayWhichTask, or display button that initiates it onclick
 // clears the html of random crap from before (the stuff in content), might even reload
 function startChooseTasks(arrayAccounts, selectedAccountPID) {
 
-  // does 1)
-  saveArrayAccounts(arrayAccounts, selectedAccountPID);
+  // does 1) (NO LONGER DOES THIS AT THIS POINT TODO)
+  // saveArrayAccounts(arrayAccounts, selectedAccountPID);
 
 
   // does 2) TODO figure out how to defer until the other AJAX stuff is done (so we can update the page using the right stuff)
@@ -249,7 +249,12 @@ function displayListAccounts(platToken) {
       let f = document.createElement('form');
       f.setAttribute('id', 'selectAccountForm');
       f.setAttribute('action', '/reporting.html');
-      f.setAttribute('onsubmit', 'saveArrayAccounts(); clearStuff(); displayWhichTask();');
+      let DUMMYDATA = 'OOFDOOFDUMMYDATA';
+      // TODO take out dummydata, implement the retention of your choice of account, this has to be pushed til after selection
+      // TODO could just specify a function like 'deal with accounts'
+      // TODO look to login.js for guidance here
+      // on submission, this form saves the Array of Accounts, Clears All the Stuff, Displays Next Task stuff
+      f.setAttribute('onsubmit', 'saveArrayAccounts(' + arrayAccounts + ',"' + DUMMYDATA + '"); clearStuff(); displayWhichTask();');
       f.setAttribute('class', 'accountsForm');
 
       document.body.appendChild(f);
@@ -431,7 +436,7 @@ function displayLinkToSignIn() {
   div.innerHTML = '<button class="redirect" type="button" onclick="redirectLogin()" height="100">click to ReLogin</button>';
 
   // putting in the child
-  var parentNode = document.getElementById('hidden');
+  var parentNode = document.body;
   parentNode.appendChild(div);
 }
 

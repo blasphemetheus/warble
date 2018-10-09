@@ -3,6 +3,12 @@
 
 <head>
   <title>DGX</title>
+  <script>
+    function submitForm() {
+      alert('You just tried to submit a form');
+    }
+
+  </script>
 </head>
 
 <body>
@@ -27,7 +33,7 @@
       <br><input type="radio" name="env" value="Production" checked> Production <input type="radio" name="env" value="stage"> Stage <input type="radio" name="env" value="dev"> Dev
       <p><label for="show_name">Show Name: </label><input type="text" name="show_name" id="sname" style="width: 300px;">
         <p>
-          <input value="Add" type="submit" onclick="submitform()">
+          <input value="Add" type="submit" onclick="submitForm()">
           <!-- Visual warning to confirm show name is entered correctly __>
     </form>
     <p>
