@@ -11,10 +11,10 @@ var refresh;
 
 //sends an http request to get a new token, given the username and password. Returns false if unsuccessful for any reason.
 // if successful, returns the token
-function requestToken(u, p, e) {
+function requestToken(username, password, encodedString) {
   var responseText = document.getElementById('response');
   // TODO better checking/reporting on whether the username or password are not empty
-  if (u === '' || p === '') {
+  if (username === '' || password === '') {
     responseText.innerHTML = 'you didn\'t enter in anything for your username and password, try again';
   }
 
@@ -24,7 +24,7 @@ function requestToken(u, p, e) {
   Http.open("GET", url)
 
   //sets header to be the encoding
-  Http.setRequestHeader("Authorization", "Basic " + e);
+  Http.setRequestHeader("Authorization", "Basic " + encodedString);
 
   // the function that runs when the http sends and gets a response
   Http.onload = (res) => {
@@ -93,6 +93,21 @@ function requestToken(u, p, e) {
       lastAttempt.style.backgroundColor = 'green';
       errorCase.textContent = 'Success - redirecting now ...';
 
+      // half the time it changes background color to pink, half to green
+      let random = Math.floor(Math.random() * 3);
+      console.log(random);
+      if (random == 1) {
+        // CHANGES BACKGROUND TO PINK
+        let styl = document.createElement('style');
+        styl.innerHTML = 'body { background-color: #d24dff;}';
+
+        document.head.appendChild(styl);
+      } else if (random == 2) {
+        document.body.style.backgroundColor = 'green';
+      } else {
+        console.log('oops I guess I don\'t understand the random fn');
+      }
+
       // TODO make this countdown more advanced, have a countdown and write a function that adds one to the countdown displayed
       //wait 3 seconds with countdown
       //alert('redirecting...');
@@ -143,7 +158,7 @@ function requestToken(u, p, e) {
 
   //happens regardless of if statement
   Http.send()
-} // end of requiresToken fn
+} // end of requestToken fn
 
 function checkLogin() {
 
@@ -195,9 +210,7 @@ function checkLogin() {
   usernameField.focus();
 }
 
-
 loginAttempt.addEventListener('click', checkLogin);
-
 
 // javascript yo
 function createParagraph() {

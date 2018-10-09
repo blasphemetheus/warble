@@ -6,6 +6,9 @@
 
 logSession();
 logCookies();
+displaySignOut();
+displayClearAccount();
+displayClearTask();
 
 // pull out string of JSON with name 'SignIn' from within all the cookies
 // if there isn't any such thing, signInCookie gets set to ""
@@ -92,6 +95,7 @@ startChooseTasks(exampleArray, 'BOFA');
 function logCookies() {
   console.log("SignIn cookie: ", getCookie('SignIn'));
   console.log("WhichAccount cookie: ", getCookie('WhichAccount'));
+  console.log("Task cookie: ", getCookie('Task'));
 }
 
 // function you can call that spits out all the SessionStorage stuff I'm dealing with
@@ -137,6 +141,7 @@ function removeElement(elementId) {
 
 // function that clears the previous stuff (deletes the form with the id selectAccountForm out)
 function clearStuff() {
+  // TODO change the design so this makes more sense, just removes the node with the content id
   var stuff = document.getElementById('selectAccountForm');
   stuff.parentNode.removeChild(stuff);
   var content = document.getElementById('content');
@@ -365,6 +370,55 @@ function toggleHidden() {
       document.getElementById("hidden").style.display = 'none';
     }
   }
+}
+
+
+
+
+// displays the stuff that allows you to pick a task
+function whichTask() {
+  alert('stub whichtask');
+}
+
+// displays the stuff that allows you to pick an account
+function whichAccount() {
+  alert('stub whichaccount');
+}
+
+
+
+
+// appends to hidden, a link that clears your account sessionStorage
+function displayClearAccount() {
+  let link = document.createElement('a');
+  link.className = 'clearAccount';
+  link.setAttribute('href', 'javascript: exitAccount()');
+  link.innerHTML = "clear account <br>";
+
+  var parentNode = document.getElementById('hidden');
+  parentNode.appendChild(link);
+}
+
+// appends to hidden, a link that clears your task sessionStorage
+function displayClearTask() {
+  let link = document.createElement('a');
+  link.className = 'clearTask';
+  link.setAttribute('href', 'javascript: exitTask()');
+  link.innerHTML = "clear task <br>";
+
+  let parent = document.getElementById('hidden');
+  parent.appendChild(link);
+}
+
+// appends to hidden, a link that signs you out (clears your signin sessionStorage)
+function displaySignOut() {
+  let link = document.createElement('a');
+  link.className = 'signOut';
+  link.setAttribute('href', 'javascript: signOut()');
+  link.innerHTML = "Sign Out <br>";
+
+  let parent = document.getElementById('hidden');
+  parent.appendChild(link);
 }
 
 // appends to end of file, the Button directing you to login again
