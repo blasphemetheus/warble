@@ -29,7 +29,7 @@ if (isSignedIn() == false) { // No, not signed in
   token = signInFo.token;
 
   // display the prompt for choosing an account, passing in the token we need
-  displayListAccounts(token);
+  selectAccounts(token);
 
 } else if (isInTask() == false) { // Yes - signIn, Yes - Account, No - Task
   console.log('WELCOME - Logic Branch - Yes SignIn, Yes Account, No Task');
@@ -42,8 +42,17 @@ if (isSignedIn() == false) { // No, not signed in
   // lets parse the account Object we put in sessionStorage before
   accountObject = JSON.parse(accessAccount());
 
+  // display the prompt for choosing a task (not passing in anything, doesn't matter if we have token or account or what);
+  selectTasks();
+
+  /// TODO choose displayWhichTask or startChooseTasks ---
   // display the prompt for choosing a task (passing in an accountObject and token)
   displayWhichTask(accountObject, token);
+
+  exampleArray = ['hell', 'is', 'irony'];
+
+  startChooseTasks(exampleArray, 'BOFA');
+
 
 } else { // Yes - signin, Yes - Account, Yes - Task
   console.log('WELCOME - Logic Branch - Yes SignIn, Yes Account, Yes Task');
@@ -52,6 +61,31 @@ if (isSignedIn() == false) { // No, not signed in
   console.log('signin', isSignedIn());
   console.log('inaccount', isInAccount());
   console.log('intask', isInTask());
+
+  //TODO portion here where we display all the info we have (json form and interpreted),
+  //TODO and ask if that is what you want? Ready to move on to actually doing it?
+
+  // display all the info we got in the html (json form and interpreted), asks if this is what you want,
+  // displays a button with 'i'm sure' on it that hits a function that sends us to warble.html
+  function youSure() {
+    console.log('asking user: you sure bout this? <displays data>');
+
+    // the form element (big)
+    let yousure = document.createElement('form');
+    yousure.setAttribute('class', 'YouSureForm');
+    yousure.textContent = 'You sure? <br>';
+
+    // a div with json bit
+    let displayInfo = document.createElement('div');
+    displayInfoInJSON.textContent = 'This is what you input: ';
+
+    let displayJSON = document.createElement('p');
+    displayJSON.textContent = worldState('json');
+
+    let displayPlain = document.createElement('p');
+    displayPlain = worldState('plain');
+
+  }
 
   // make sure all this stuff is saved in sessionStorage ???
   // to catch any weird errors, just check that these things
@@ -63,30 +97,67 @@ if (isSignedIn() == false) { // No, not signed in
   }
 }
 
-
 // sessionStorage.setItem('AccountsJSON', JSON.stringify(buildingAccountJSON));
-
 // ... -------------------- ... //
-
 //
-/// --- after all functions, this is where we apply eventListeners
-//
+/// --- after intro logic, this is where we apply eventListeners
 
-// // MAKE THE buttons do the boom thing
-// var buttons = document.querySelectorAll('button');
-// // run through every button in array, add an eventListener for click that calls boom
-// for (var i = 0; i < buttons.length; i++) {
-//   buttons[i].addEventListener('click', boom);
-// }
+// populates and displays prompt (form) for selecting tasks,
+// on submission of that form (multiple boxes checked, one, or none)
+// it saves the task info in sessionStorage and reloads page
+function selectTasks() {
 
-
-console.log('PAYATTENTIONHERE');
-exampleArray = ['hell', 'is', 'irony'];
-
-startChooseTasks(exampleArray, 'BOFA');
+}
 
 
 
+// displays the next step (which task do you want to do with a token and an account?)
+function displayWhichTask() {
+  let accountsJSON = accessAccount();
+  accountsJSON = JSON.parse(accountsJSON);
+  if (accountsJSON == null) {
+    console.log('reached null condition for sessionStorage');
+  }
+
+  console.log('accountsJSON', accountsJSON);
+}
+
+// Does three things:
+// - 1) save in sessionStorage: accounts you have access to, your current account PID
+// - 2) clear out html of the listAccounts form, if there's stuff in content, clear it out too
+// - 3) Initiate displayWhichTask, or display button that initiates it onclick
+// clears the html of random crap from before (the stuff in content), might even reload
+function startChooseTasks(arrayAccounts, selectedAccountPID) {
+  //TODO this is a stubb
+  // does 1) (NO LONGER DOES THIS AT THIS POINT TODO)
+  // saveArrayAccounts(arrayAccounts, selectedAccountPID);
+
+  // does 2) TODO figure out how to defer until the other AJAX stuff is done (so we can update the page using the right stuff)
+  if (document.getElementById('selectAccountForm') == null) {
+    // there is no thing with id: 'selectAccountForm', so the getElementById returned null
+    console.log('there is no selectAccountForm to Modify -- exiting function');
+    return;
+  } else {
+    // there is at least one such thing with id 'selectAccountForm', so we'll deal with it
+    console.log('ERORR ERROR THIS SHOULDN"T HAVE APPENED THIS IS A RANDOM ELSE CLAUSE I LEFT IN');
+  }
+  ///
+  // setCookie(cname, cvalue, exdays);
+  //
+  //
+  // d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  // var expires = "expires=" + d.toUTCString();
+  // document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+
+
+
+
+
+
+
+/// end eventListeners
 /* ONLY FUNCTIONS FROM HERE ON OUT */
 
 
@@ -115,6 +186,8 @@ function logSession() {
 // function that makes sure the current arrayAccounts (as given) is saved in sessionStorage
 // along with the selected one, overwrites previous sessionStorage string if there is one
 function saveArrayAccounts(arrAccounts, currentAccountPIDString) {
+
+
 
   /*Form -----    {selectedAccount : "pidOfSelectedAccount", listOfAccounts : [{accountObj1},{accountObj2}] }    */
   // this is the format of the JSON we will have in sessionStorage
@@ -145,54 +218,7 @@ function clearStuff() {
   content.parentNode.removeChild(content);
 }
 
-// displays the next step (which task do you want to do with a token and an account?)
-function displayWhichTask() {
-  let accountsJSON = accessAccount();
-  accountsJSON = JSON.parse(accountsJSON);
-  if (accountsJSON == null) {
-    console.log('reached null condition for sessionStorage');
-  }
-
-  console.log('accountsJSON', accountsJSON);
-}
-
 // ---------------------- END memory functionality ----------------- //
-
-// Does three things:
-// - 1) save in sessionStorage: accounts you have access to, your current account PID
-
-
-
-// - 2) clear out html of the listAccounts form, if there's stuff in content, clear it out too
-// - 3) Initiate displayWhichTask, or display button that initiates it onclick
-// clears the html of random crap from before (the stuff in content), might even reload
-function startChooseTasks(arrayAccounts, selectedAccountPID) {
-
-  // does 1) (NO LONGER DOES THIS AT THIS POINT TODO)
-  // saveArrayAccounts(arrayAccounts, selectedAccountPID);
-
-
-  // does 2) TODO figure out how to defer until the other AJAX stuff is done (so we can update the page using the right stuff)
-  if (document.getElementById('selectAccountForm') == null) {
-    // there is no thing with id: 'selectAccountForm', so the getElementById returned null
-    console.log('there is no selectAccountForm to Modify -- exiting function');
-    return;
-  } else {
-    // there is at least one such thing with id 'selectAccountForm', so we'll deal with it
-    console.log('ERORR ERROR THIS SHOULDN"T HAVE APPENED THIS IS A RANDOM ELSE CLAUSE I LEFT IN');
-  }
-
-
-  ///
-
-
-  // setCookie(cname, cvalue, exdays);
-  //
-  //
-  // d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-  // var expires = "expires=" + d.toUTCString();
-  // document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-}
 
 // example function, to be activated by pushing a button, returns false to not refresh
 function doSomething() {
@@ -203,10 +229,8 @@ function doSomething() {
 
 
 
-// given a token, list the accounts linked to this token, display appropriate messaging if token is invalid
-function displayListAccounts(platToken) {
-  // echo out informational stuff
-
+// given a token, list the accounts linked to this token, display appropriate messaging if token is invalid, specify behavior when Select button is pressed
+function selectAccounts(platToken) {
   // header (informational, what step?, what task?)
   var header = document.createElement('h3');
   header.innerHTML = "Which Network do you want to update?";
@@ -228,7 +252,15 @@ function displayListAccounts(platToken) {
   // open up a get request to the url, have it return a response with a body
   xht.open("GET", urlListAccounts, true);
   // here we define the function to do when the thing is loaded
-  xht.onload = (res) => {
+  xht.onload = continueSelectAccounts();
+  xht.send(); // sends the fn to get listAccounts
+} // end of selectAccounts() fn
+
+
+// the function for when the http request comes back with a response
+function continueSelectAccounts() {
+  return (res, xht) => {
+
     console.log("onload Triggered for ListAccounts Request");
     response = JSON.parse(xht.response);
 
@@ -356,12 +388,8 @@ function displayListAccounts(platToken) {
       // lookup failure
       displayString('ERROR ERROR ERROR, LOOKUP LISTACCOUNTS FAILURE');
     } // end of else clause of lookUpAccountResponse logic
-
-  } // end of onload fn
-
-  xht.send(); // sends the fn to get listAccounts
-} // end of displayListAccounts fn
-
+  } // end of wrapper thing
+} // end of onload fn
 
 // reveals all the hidden stuff, or hides it all
 function toggleHidden() {
@@ -464,3 +492,16 @@ function boom() {
   paragraph.textContent = 'boom!';
   document.getElementById('content').appendChild(paragraph);
 }
+
+
+// -------------------------------
+function checkPickAccount() {
+
+}
+
+let attemptPickAccount = document.querySelector('selectAccountForm');
+
+/// add an event listener
+attemptPickAccount.addEventListener('click', checkPickAccount);
+
+loginAttempt.addEventListener('click', checkLogin);

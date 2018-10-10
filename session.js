@@ -88,7 +88,53 @@ function exitTask() {
   document.location.reload(true);
 }
 
+//////
 
+// returns a string, representing the worldState
+function worldState(type) {
+
+  switch (type) {
+    case 'json':
+      return 'SignIn - ' + accessSignIn() + '\n' + 'Account - ' + accessAccount() + '\n' + 'Task - ' + accessTask() + '\n';
+      break;
+    case 'plain':
+      let signin;
+      let account;
+      let task;
+      // go through the three world paramaters and make sure if they don't exist that we have objects with dummy Nil values
+      if (isSignedIn()) {
+        signin = accessSignIn();
+      } else { // just some dummy object to display No User in userName spot
+        signin = '{userName: "NoUser"}';
+      }
+
+      if (isInAccount()) {
+        account = accessAccount();
+      } else { // just some dummy object to display 'No Account' in currentAccount spot
+        account = '{"currentAccount": "NoAccount"}';
+      }
+
+      if (isInTask()) {
+        task = accessTask();
+      } else { // just some dummy object to display 'No Task' in currentTask spot
+        task = '{"tasks": ["NoTask"]}';
+      }
+      // parse each string
+      signin = JSON.parse(signin);
+      account = JSON.parse(account);
+      task = JSON.parse(task);
+
+      signin = signin.userName;
+      account = account.currentAccount;
+      task = task.tasks;
+      return temp = "SignIn - " + signin + '\nAccount - ' + account + '\nTask - ' + task + '\n';
+      break;
+    default:
+      new Error('You tried to use worldState but did\'t specify a vaild type');
+      break;
+  } // end of switch
+
+}
 
 /* FROM W3W3SCHOOLS */
 

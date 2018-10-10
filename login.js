@@ -103,15 +103,15 @@ function requestToken(username, password, encodedString) {
       errorCase.textContent = 'Success - redirecting now ...';
 
       // half the time it changes background color to pink, half to green
-      let random = Math.floor(Math.random() * 3);
+      let random = Math.floor(Math.random() * 2);
       console.log(random);
-      if (random == 1) {
+      if (random == 0) {
         // CHANGES BACKGROUND TO PINK
         let styl = document.createElement('style');
         styl.innerHTML = 'body { background-color: #d24dff;}';
 
         document.head.appendChild(styl);
-      } else if (random == 2) {
+      } else if (random == 1) {
         document.body.style.backgroundColor = 'green';
       } else {
         console.log('oops I guess I don\'t understand the random fn');
@@ -241,74 +241,3 @@ var buttons = document.querySelectorAll('button');
 for (var i = 0; i < buttons.length; i++) {
   buttons[i].addEventListener('click', createParagraph);
 }
-
-
-/*
--------- get-token.php --------
-<?
-
-$username = $_GET["username"];
-$password = $_GET["password"];
-
-$url = 'https://identity.auth.theplatform.com/idm/web/Authentication/signIn?schema=1.0&form=json&_idleTimeout=120960000';
-
-
-
-//Here is the CURL that does the magic and creates the token
-$ch = curl_init($url);
-        $options = array(
-                CURLOPT_RETURNTRANSFER => true,         // return web page
-                CURLOPT_HEADER         => false,        // don't return headers
-                CURLOPT_FOLLOWLOCATION => false,         // follow redirects
-               // CURLOPT_ENCODING       => "utf-8",           // handle all encodings
-                CURLOPT_AUTOREFERER    => true,         // set referer on redirect
-                CURLOPT_CONNECTTIMEOUT => 20,          // timeout on connect
-                CURLOPT_TIMEOUT        => 20,          // timeout on response
-                //CURLOPT_POST            => 1,            // i am sending post data
-                //CURLOPT_POSTFIELDS     => $request,    // this are my post vars
-                CURLOPT_HTTPHEADER     => array(
-                    "Authorization: Basic " .$finallogincred."",
-                    "Content-Type: application/json"
-                )
-
-        );
-
-        curl_setopt_array($ch,$options);
-        $data = curl_exec($ch);
-        $curl_errno = curl_errno($ch);
-        $curl_error = curl_error($ch);
-       // echo $curl_errno;
-        //echo $curl_error;
-        curl_close($ch);
-
-
-//The token is stored in the returned JSON called "$data"
-
-//$outputJSON is where we store the decoded JSON
-$outputJSON = json_decode($data);
-
-
-//Then we pull out the nested token value from the main array and the token is called
-//You guessed it "token" in side the overaaching array signInResponse
-//echo "i am a token:" .$outputJSON->signInResponse->token;
-
-//Now let's create a session cookie so we can use the token whenever we need it.
-
-if($outputJSON->signInResponse->token) {
-//drop the token cookie as a session variable and take user to page to do stuff
-	session_start();
-	$_SESSION['myToken'] = $outputJSON->signInResponse->token;
-	header('Location: do-stuff.php');
-
-} else {
-	//login didn't work and sends you back home for new creds
-	header('Location: index.php?login=failed');
-
-}
-
-?>
-
-<a href="is-token-still-here.php">check for token</a>
-
-
-*/
