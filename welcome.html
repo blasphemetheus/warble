@@ -6,6 +6,7 @@
   <title>Welcome (to Warble)</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" defer></script>
   <script src="session.js" defer></script>
+  <script src="tasks.js" defer></script>
   <script src="welcome.js" defer></script>
 </head>
 
@@ -18,12 +19,25 @@
     <hr>
   </header>
 
-  <button class="reveal" type="button" onclick="toggleHidden()">click to reveal stuff you can do</button>
+  <button class="reveal" type="button" onclick="toggleHidden()">Toggle Options</button>
 
   <div id="hidden" style="display:none">
   </div>
 
   <div id="content"></div>
+
+
+  <!-- <select id="AccountOptions">
+<option></option>
+<option value="2">two</option>
+<option value="3">three</option>
+<option value="4">four</option>
+</select>
+
+  <button id="btn">Show selected</button>
+  !-->
+
+  <div id="display"></div>
 
 
 </body>

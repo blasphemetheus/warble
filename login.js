@@ -104,7 +104,6 @@ function requestToken(username, password, encodedString) {
 
       // half the time it changes background color to pink, half to green
       let random = Math.floor(Math.random() * 2);
-      console.log(random);
       if (random == 0) {
         // CHANGES BACKGROUND TO PINK
         let styl = document.createElement('style');

@@ -30,11 +30,40 @@ function signOut() {
 }
 
 // ----------------------------
+function addJustArray(added) {
+  added = JSON.stringify(added);
+  sessionStorage.setItem('Array', added);
+}
+
+function getJustArray() {
+  return sessionStorage.getItem('Array');
+}
+
+function clearJustArray() {
+  sessionStorage.removeItem('Array');
+}
+
+// ----------------------------
+
+
 // accessAccount, enterAccount, exitAccount
 
 // returns the thing stored at Account in sessionStorage, returns null if null
 function accessAccount() {
   return sessionStorage.getItem("Account");
+}
+
+function accessCurrentAccount() {
+  if (isInAccount()) {
+    let obj = accessAccount();
+    obj = JSON.parse(obj);
+    if (obj.currentAccount == null) {
+      return new Error('current account does not exist');
+    }
+    return obj.currentAccount;
+  } else {
+    throw new Error('not currently in an account');
+  }
 }
 
 // returns whether you are in an account or not, false if sessionStorage for Account is null, true if not
@@ -95,7 +124,10 @@ function worldState(type) {
 
   switch (type) {
     case 'json':
-      return 'SignIn - ' + accessSignIn() + '\n' + 'Account - ' + accessAccount() + '\n' + 'Task - ' + accessTask() + '\n';
+      let temp = accessTask();
+      temp = JSON.parse(temp);
+      temp = temp.currentTask;
+      return 'SignIn - ' + accessSignIn() + '\n' + 'Account - ' + accessAccount() + '\n' + 'Task - ' + temp + '\n';
       break;
     case 'plain':
       let signin;
@@ -117,7 +149,7 @@ function worldState(type) {
       if (isInTask()) {
         task = accessTask();
       } else { // just some dummy object to display 'No Task' in currentTask spot
-        task = '{"tasks": ["NoTask"]}';
+        task = '{"name": ["NoTask"]}';
       }
       // parse each string
       signin = JSON.parse(signin);
@@ -126,8 +158,8 @@ function worldState(type) {
 
       signin = signin.userName;
       account = account.currentAccount;
-      task = task.tasks;
-      return temp = "SignIn - " + signin + '\nAccount - ' + account + '\nTask - ' + task + '\n';
+      task = task.currentTask;
+      return "SignIn - " + signin + '\nAccount - ' + account + '\nTask - ' + task + '\n';
       break;
     default:
       new Error('You tried to use worldState but did\'t specify a vaild type');
