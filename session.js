@@ -127,7 +127,7 @@ function worldState(type) {
       let temp = accessTask();
       temp = JSON.parse(temp);
       temp = temp.currentTask;
-      return 'SignIn - ' + accessSignIn() + '\n' + 'Account - ' + accessAccount() + '\n' + 'Task - ' + temp + '\n';
+      return 'SignIn: ' + accessSignIn() + '\n' + '||| Account: ' + accessAccount() + '\n' + '||| Task: ' + temp + '\n';
       break;
     case 'plain':
       let signin;
@@ -159,7 +159,7 @@ function worldState(type) {
       signin = signin.userName;
       account = account.currentAccount;
       task = task.currentTask;
-      return "SignIn - " + signin + '\nAccount - ' + account + '\nTask - ' + task + '\n';
+      return "SignIn: " + signin + '\n' + '||| Account: ' + account + '\n' + '||| Task: ' + task + '\n';
       break;
     default:
       new Error('You tried to use worldState but did\'t specify a vaild type');

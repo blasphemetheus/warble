@@ -377,7 +377,7 @@ function selectAccounts() {
       let inp = document.createElement('input');
       inp.setAttribute('type', 'submit');
       inp.setAttribute('name', 'whichAccount');
-      inp.setAttribute('value', label);
+      inp.setAttribute('value', shortID);
       inp.setAttribute('shortId', shortID);
       inp.setAttribute('PID', pid);
       inp.setAttribute('label', label);
