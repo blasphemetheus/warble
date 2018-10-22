@@ -18,35 +18,20 @@ const PROD_MAIN_ACCOUNT_CF_SHOWS = "156313528";
 
 //TODO Edit this if the Show Custom Field Changes within these accounts
 
-let myInfo = pullOutStuffForAddShow();
-
-
-
-// switch that checks the account of our sessionStorage with the hard-coded constants (our id's for the Main accounts)
-switch (myInfo.account) {
-  case DEV_MAIN_ACCOUNT:
-    // TODO will add the rest of the dev accounts (ifc, amc, bbca, sundance, wetv) so they go to this logic branch
-    alert('dev'); // TODO
-    break;
-
-  case STAGE_MAIN_ACCOUNT: // TODO look at dev bit
-    alert('stage'); // TODO
-    break;
-
-  case PROD_MAIN_ACCOUNT: // TODO look at dev bit
-    alert('prod'); // TODO: stub, will have actual behavior that attempts to call the task on this account,
-    // TODO: if your authorization is messed up (not an admin/not high enough priveleges), it should tell the user
-    break;
-
-  default:
-    alert('something went wrong, the account we\'re trying to do stuff with is not an admin account');
-    break;
+// STUB TODO: This function will tell you if you can add a show using the account you're in 
+function canAddShow() {
+  return true;
 }
 
-displayAddShow();
-
+// if the account we're working with has the ability to add a show, then we'll display the option to, otherwise we display 'cant add show'
+if (canAddShow()) {
+  displayAddShow();
+} else {
+  let sry = document.createElement('p');
+  sry.textContent = 'Sorry, this account cannot add an allowedValue to the Show custom Field.';
+  document.body.appendChild(sry);
+}
 // -------------- function below, scripts above
-
 
 // Removes an element from the document as specified by elementID
 function removeByID(elementId) {
