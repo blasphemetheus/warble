@@ -1,129 +1,3 @@
-//  returns the existing shows as an object
-function existingShowsAsObject(newShow) {
-  // PUT ALL OUR INFO ON THE TABLE
-  let obj = pullOutStuffForAddShow();
-  let token = obj.token;
-  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + "214169463" +
-    "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
-
-  // get allowedvalues for shows
-  fetch(getAllowedValuesForShowsURL)
-    .then(response => response.json())
-    .then(data => {
-      let arrayShows = data.allowedValues;
-      arrayShows.push(newShow);
-      arrayShows.sort();
-      console.log('AAA', arrayShows);
-      console.log(newShow);
-    })
-    .catch(error => console.error(error));
-
-  return {
-    "$xmlns": {
-      "plfield": "http://xml.theplatform.com/data/object/Field"
-    },
-    "plfield$dataStructure": "Single",
-    "plfield$defaultValue": "",
-    "title": "Show",
-    "plfield$allowedValues": ["", "4th and Loud", "AMC Comic Con", "AMC Conversations", "AMC Fearfest", "AMC News", "Better Call Saul", "Breaking Bad", "Brockmire", "Broken Trail", "Class", "Cleverman", "Comic Book Men", "Dietland", "Dirk Gently's Holistic Detective Agency", "Doctor Who", "Fear the Walking Dead", "Feed the Beast", "Freakshow", "Game of Arms", "Geeking Out", "HUMANS", "Halt and Catch Fire", "Hap and Leonard", "Hell on Wheels", "Imagine: John Lennon 75th Birthday Concert", "Immortalized", "Into the Badlands", "James Cameron’s Story of Science Fiction", "Live Stream", "Liza Life Coach", "Loaded", "Low Winter Sun", "Mad Men", "McMafia", "Mob Week", "Owner's Manual", "Planet Earth II", "Preacher", "Rebellion", "Rectify", "Ride with Norman Reedus", "Robert Kirkman's Secret History of Comics", "Rubicon", "Shootout", "Showville", "Small Town Security", "Stan Against Evil", "Story Notes", "Storymakers", "TCA", "TURN", "Talking Bad", "Talking Dead", "Talking Preacher", "Talking Saul", "Talking with Chris Hardwick", "The American West", "The Killing", "The Making of the Mob", "The Night Manager", "The Pitch", "The Prisoner", "The Rifleman", "The Son", "The Terror", "The Three Stooges", "The Trivial Pursuits of Arthur Banks", "The Walking Dead", "The Walking Dead Extended Episodes", "The Walking Dead Red Machete", "Top of the Lake", "Western Movies"],
-    "plfield$notifyAlways": false,
-    "plfield$length": 0,
-    "id": "http://data.media.theplatform.com/media/data/Media/Field/214169463",
-    "guid": "YAD6ewA2DgDfegBA3wwYJcMSGvejuHfI",
-    "ownerId": "http://access.auth.theplatform.com/data/Account/2686406403",
-    "plfield$dataType": "String"
-  };
-  // return {
-  //   $xmlns: {
-  //     plfield: "http://xml.theplatform.com/data/object/Field"
-  //   },
-  //   plfield$dataStructure: "Single",
-  //   plfield$defaultValue: "",
-  //   title: "Show",
-  //   plfield$allowedValues: [
-  //     "",
-  //     "4th and Loud",
-  //     "AMC Comic Con",
-  //     "AMC Conversations",
-  //     "AMC Fearfest",
-  //     "AMC News",
-  //     "Better Call Saul",
-  //     "Breaking Bad",
-  //     "Brockmire",
-  //     "Broken Trail",
-  //     "Class",
-  //     "Cleverman",
-  //     "Comic Book Men",
-  //     "Dietland",
-  //     "Dirk Gently's Holistic Detective Agency",
-  //     "Doctor Who",
-  //     "Fear the Walking Dead",
-  //     "Feed the Beast",
-  //     "Freakshow",
-  //     "Game of Arms",
-  //     "Geeking Out",
-  //     "HUMANS",
-  //     "Halt and Catch Fire",
-  //     "Hap and Leonard",
-  //     "Hell on Wheels",
-  //     "Imagine: John Lennon 75th Birthday Concert",
-  //     "Immortalized",
-  //     "Into the Badlands",
-  //     "James Cameron’s Story of Science Fiction",
-  //     "Live Stream",
-  //     "Liza Life Coach",
-  //     "Loaded",
-  //     "Low Winter Sun",
-  //     "Mad Men",
-  //     "McMafia",
-  //     "Mob Week",
-  //     "Owner's Manual",
-  //     "Planet Earth II",
-  //     "Preacher",
-  //     "Rebellion",
-  //     "Rectify",
-  //     "Ride with Norman Reedus",
-  //     "Robert Kirkman's Secret History of Comics",
-  //     "Rubicon",
-  //     "Shootout",
-  //     "Showville",
-  //     "Small Town Security",
-  //     "Stan Against Evil",
-  //     "Story Notes",
-  //     "Storymakers",
-  //     "TCA",
-  //     "TURN",
-  //     "Talking Bad",
-  //     "Talking Dead",
-  //     "Talking Preacher",
-  //     "Talking Saul",
-  //     "Talking with Chris Hardwick",
-  //     "The American West",
-  //     "The Killing",
-  //     "The Making of the Mob",
-  //     "The Night Manager",
-  //     "The Pitch",
-  //     "The Prisoner",
-  //     "The Rifleman",
-  //     "The Son",
-  //     "The Terror",
-  //     "The Three Stooges",
-  //     "The Trivial Pursuits of Arthur Banks",
-  //     "The Walking Dead",
-  //     "The Walking Dead Extended Episodes",
-  //     "The Walking Dead Red Machete",
-  //     "Top of the Lake",
-  //     "Western Movies"
-  //   ],
-  //   plfield$notifyAlways: false,
-  //   plfield$length: 0,
-  //   id: "http://data.media.theplatform.com/media/data/Media/Field/214169463",
-  //   guid: "YAD6ewA2DgDfegBA3wwYJcMSGvejuHfI",
-  //   ownerId: "http://access.auth.theplatform.com/data/Account/2686406403",
-  //   plfield$dataType: "String"
-  // };
-}
-
 // this function makes request to get existing shows, then adds them in the form of a (string) to the html in the alert id
 function addExistingShowsToHTML() {
   // PUT ALL OUR INFO ON THE TABLE
@@ -191,6 +65,43 @@ function canWeAddShow() {
   }
 }
 
+
+function doFetchForAddShows(body, urlToAddShows) {
+  console.log('DID IT WORK', body);
+  //TODO: Set passingInBody = {thejsonwespecify}
+
+  // // put response in html (body)
+  // let response = document.createElement('div');
+  // response.setAttribute('id', 'response');
+  // response.style = 'color=green;';
+  // document.body.appendChild(response);
+  //
+  // // pull out the thing we just put in html and set responseText as it
+  // var responseText = document.getElementById('response');
+  //
+  // if (showToAdd == '') {
+  //   responseText.innerHTML = 'you didn\'t enter in anything for your Show To Add, try again pls, enter stuff this time';
+  // }
+
+  fetch(urlToAddShows, {
+      method: "POST",
+      // mode: "no-cors",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+        // "Accept": "application/json"
+        // "Cache-Control": "no-cache",
+      }
+    }).then(res => res.json())
+    .then(data => {
+      console.log('Success: ', JSON.stringify(data))
+      // refresh page
+      window.location.href = 'warble.html';
+    })
+    .catch(error => console.error(error));
+}
+
+
 // this function actually adds the show (making ajax calls, responds to them etc)
 function doAddShow(showToAdd) {
   console.log('actually adding show', showToAdd);
@@ -208,44 +119,46 @@ function doAddShow(showToAdd) {
   console.log('Our Info', object);
   let token = object.token;
 
+  if (typeof showToAdd == "undefined") {
+    console.error('Ooops didn\'t pass in a showToAdd');
+  }
+
   const addShowURL = "http://data.media.theplatform.com/media/data/Media/Field/214169463" +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true" +
     "&token=" + token;
 
+  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + "214169463" +
+    "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
 
-  let passingInBody = {
-    "json": "true"
-  };
-
-  passingInBody = existingShowsAsObject();
-  console.log(passingInBody);
-  //TODO: Set passingInBody = {thejsonwespecify}
-
-  // // put response in html (body)
-  // let response = document.createElement('div');
-  // response.setAttribute('id', 'response');
-  // response.style = 'color=green;';
-  // document.body.appendChild(response);
-  //
-  // // pull out the thing we just put in html and set responseText as it
-  // var responseText = document.getElementById('response');
-  //
-  // if (showToAdd == '') {
-  //   responseText.innerHTML = 'you didn\'t enter in anything for your Show To Add, try again pls, enter stuff this time';
-  // }
-
-  fetch(addShowURL, {
-      method: "POST",
-      // mode: "no-cors",
-      body: JSON.stringify(passingInBody),
-      headers: {
-        "Content-Type": "application/json",
-        // "Accept": "application/json"
-        // "Cache-Control": "no-cache",
-      }
-    }).then(res => res.json())
-    .then(data => console.log('Success: ', JSON.stringify(data)))
+  // get allowedvalues for shows, build the body of the json you're gonna post later and return it as an object
+  fetch(getAllowedValuesForShowsURL)
+    .then(response => response.json())
+    .then(data => {
+      let arrayShows = data.allowedValues;
+      arrayShows.push(showToAdd);
+      arrayShows.sort();
+      console.log('AAA', arrayShows);
+      console.log(showToAdd);
+      let passingInBody = {
+        "$xmlns": {
+          "plfield": "http://xml.theplatform.com/data/object/Field"
+        },
+        "plfield$dataStructure": "Single",
+        "plfield$defaultValue": "",
+        "title": "Show",
+        "plfield$allowedValues": arrayShows,
+        "plfield$notifyAlways": false,
+        "plfield$length": 0,
+        "id": "http://data.media.theplatform.com/media/data/Media/Field/214169463",
+        "guid": "YAD6ewA2DgDfegBA3wwYJcMSGvejuHfI",
+        "ownerId": "http://access.auth.theplatform.com/data/Account/2686406403",
+        "plfield$dataType": "String"
+      };
+      // calls the function doFetchForAddShows, which does the fetch for adding a show, given the body (the message), and the URL
+      doFetchForAddShows(passingInBody, addShowURL);
+    })
     .catch(error => console.error(error));
+
   // .then(data => {
   //
   //   // data is a thing that holds the json representation of our response
@@ -375,8 +288,6 @@ function doAddShow(showToAdd) {
 
 
   //
-  // // refresh page
-  // window.location.href = 'warble.html';
 }
 
 
