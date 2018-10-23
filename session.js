@@ -117,17 +117,34 @@ function exitTask() {
   document.location.reload(true);
 }
 
-//////
-
 // returns a string, representing the worldState
 function worldState(type) {
 
   switch (type) {
     case 'json':
-      let temp = accessTask();
-      temp = JSON.parse(temp);
-      temp = temp.currentTask;
-      return 'SignIn: ' + accessSignIn() + '\n' + '||| Account: ' + accessAccount() + '\n' + '||| Task: ' + temp + '\n';
+      let tsk = accessTask();
+      tsk = JSON.parse(tsk);
+      tsk = tsk.currentTask;
+      let tskSt = "";
+      tskSt += "Selected Task: " + tsk;
+      // tskSt =
+
+      let signinObj = JSON.parse(accessSignIn());
+      let signInString = "";
+      signInString += "userName: " + signinObj.userName + " | ";
+      signInString += "token: " + signinObj.token + " | ";
+      signInString += "User ID: " + signinObj.userId;
+
+      let accObj = JSON.parse(accessAccount());
+      let accString = "";
+      accString += "Current Account: " + accObj.currentAccount + " | \n";
+      accString += "Available Accounts: ";
+      let accArr = JSON.parse(accObj.availableAccounts);
+      accArr.forEach((element) => {
+        accString += "*" + JSON.stringify(element) + "**";
+      })
+
+      return 'SignIn || ' + signInString + '\n' + '||| Account ||' + accString + '\n' + '||| Task || ' + tskSt + '\n';
       break;
     case 'plain':
       let signin;

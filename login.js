@@ -1,3 +1,14 @@
+//NOTE: run the debugOptions() function to display a menu with link options
+//debugOptions();
+
+// displays a couple of links in the html (appends to end)
+function debugOptions() {
+  let d = document.createElement('div');
+  d.innerHTML = '<hr><a href="index.html">index</a><hr><a href="welcome.html">GoRighttowelcomepage</a><hr><a href="greg.html">Greg\'s vision</a>   <hr>   <a href="warble.html">My demo</a>   <hr>   <a href="javascript:signOut();">Sign Out</a>   <hr>   <hr>   <a href="codemirror.html">CodeMirror</a>   <hr>   <a href="runLinker.html"> Run Linker Directly</a>   <hr>';
+  document.body.appendChild(d);
+}
+
+
 // if you're already signed in you can't sign in again until you log out silly
 if (isSignedIn() == true) {
   window.location.href = 'welcome.html';
@@ -128,7 +139,7 @@ function updateHTMLSuccess(token) {
   // TODO a website (i want to do this), I need to figure out how to do that via Javascript
 
   // let timerId2 = setTimeout(() => window.location.href = 'welcome.html', 2000);
-  let timerId2 = setTimeout(() => window.location.href = 'welcome.html', 2000);
+  let timerId2 = setTimeout(() => window.location.href = 'welcome.html', 1000);
 }
 
 //sends an http request to get a new token, given the username and password. Returns false if unsuccessful for any reason.

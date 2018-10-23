@@ -61,9 +61,6 @@ if (!isSignedIn()) { // No, not signed in
   let explanation = document.createElement('div');
   explanation.textContent = 'This is what you input: ';
 
-  let displayJSON = document.createElement('p');
-  displayJSON.textContent = worldState('json');
-
   let displayPlain = document.createElement('p');
   displayPlain.textContent = worldState('plain');
 
@@ -74,8 +71,6 @@ if (!isSignedIn()) { // No, not signed in
   document.body.appendChild(yousure);
   document.body.appendChild(linebreak);
   document.body.appendChild(explanation);
-  document.body.appendChild(linebreak);
-  document.body.appendChild(displayJSON);
   document.body.appendChild(linebreak);
   document.body.appendChild(displayPlain);
 

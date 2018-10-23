@@ -7,7 +7,10 @@ function addExistingShowsToHTML() {
   let account = obj.account;
   let task = obj.task;
 
-  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + "214169463" +
+  // retrieve the account number
+  let customFieldNumber = getCFShows(account);
+
+  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + customFieldNumber +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
 
   // does the request, starts the things that happen after
@@ -35,36 +38,6 @@ function addExistingShowsToHTML() {
     })
     .catch(error => console.error(error));
 }
-
-// This function returns true if you can add a show and false if you can't (due to account issues)
-function canWeAddShow() {
-  let myInfo = pullOutStuffForAddShow();
-  // switch that checks the account of our sessionStorage with the hard-coded constants (our id's for the Main accounts)
-  switch (myInfo.account) {
-    case DEV_MAIN_ACCOUNT:
-      // TODO will add the rest of the dev accounts (ifc, amc, bbca, sundance, wetv) so they go to this logic branch
-      alert('dev'); // TODO
-      return true;
-      break;
-
-    case STAGE_MAIN_ACCOUNT: // TODO look at dev bit
-      alert('stage'); // TODO
-      return true;
-      break;
-
-    case PROD_MAIN_ACCOUNT: // TODO look at dev bit
-      alert('prod'); // TODO: stub, will have actual behavior that attempts to call the task on this account,
-      // TODO: if your authorization is messed up (not an admin/not high enough priveleges), it should tell the user
-      return true;
-      break;
-
-    default:
-      alert('something went wrong, the account we\'re trying to do stuff with is not an admin account');
-      return false;
-      break;
-  }
-}
-
 
 function doFetchForAddShows(body, urlToAddShows) {
   console.log('DID IT WORK', body);
@@ -118,16 +91,20 @@ function doAddShow(showToAdd) {
   let object = pullOutStuffForAddShow();
   console.log('Our Info', object);
   let token = object.token;
+  let account = object.account;
 
   if (typeof showToAdd == "undefined") {
     console.error('Ooops didn\'t pass in a showToAdd');
   }
 
-  const addShowURL = "http://data.media.theplatform.com/media/data/Media/Field/214169463" +
+  // retrieve the account number
+  let customFieldNumber = getCFShows(account);
+
+  const addShowURL = "http://data.media.theplatform.com/media/data/Media/Field/" + customFieldNumber +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true" +
     "&token=" + token;
 
-  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + "214169463" +
+  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + customFieldNumber +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
 
   // get allowedvalues for shows, build the body of the json you're gonna post later and return it as an object
@@ -330,7 +307,6 @@ function displayAddShow() {
   document.body.appendChild(alert);
   document.body.appendChild(div);
 }
-
 
 // the function that gets called when you press the add button when adding a new show
 function submitAddShow() {
