@@ -12,6 +12,9 @@ if (isSignedIn() && isInAccount() && isInTask()) { // not got all the stuff
     default:
       break;
   }
+} else {
+  console.error("you don't have all the info you need, sending you back to welcome.html");
+  window.location.href = "welcome.html";
 }
 
 // adds the Div with Informational stuff on Add Shows

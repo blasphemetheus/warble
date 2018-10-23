@@ -88,13 +88,30 @@ function reload() {
 // the function that gets called when the user presses the button for choosing an account
 // pulls out the arrAccounts and clears it from sessionstorage,
 // then calls saveArrayAccounts with the info it has, then reloads
-function checkPickAccount(currentAccount) {
+function checkPickAccount(curAccount) {
 
   let arrAccounts = getJustArray(); // gotta get the array of stuff out of storage (a workaround to design)
   clearJustArray(); // after you retrieve the array bit, clear it from storage
 
-  // saves all this stuff in sessionStorage
-  saveArrayAccounts(arrAccounts, currentAccount);
+  let cAccount = curAccount;
+
+  //makes sure the current arrayAccounts (as given) is saved in sessionStorage
+  // along with the selected one, overwrites previous sessionStorage string if there is one
+
+  /*Form -----    {selectedAccount : "pidOfSelectedAccount", listOfAccounts : [{accountObj1},{accountObj2}] }    */
+  // this is the format of the JSON we will have in sessionStorage
+  // sets the JSON we'll be using to
+  let buildingAccountJSON = {
+    currentAccount: cAccount,
+    availableAccounts: arrAccounts
+  };
+  // buildingAccountJSON = JSON.parse(buildingAccountJSON);
+  console.log('Our Build AccountJSON', JSON.stringify(buildingAccountJSON));
+  console.log('Our Build AccountJSON', buildingAccountJSON);
+
+  // sessionStorage storing Account
+  enterAccount(JSON.stringify(buildingAccountJSON));
+  console.log('Put AccountsJSON in sessionStorage');
 }
 
 // given the currentTask (string)
@@ -143,26 +160,6 @@ function logSession() {
   console.log('Account Storage: ', act);
   console.log('Task Storage: ', task);
 }
-
-
-// function that makes sure the current arrayAccounts (as given) is saved in sessionStorage
-// along with the selected one, overwrites previous sessionStorage string if there is one
-function saveArrayAccounts(arrAccounts, currentAccountPIDString) {
-
-  /*Form -----    {selectedAccount : "pidOfSelectedAccount", listOfAccounts : [{accountObj1},{accountObj2}] }    */
-  // this is the format of the JSON we will have in sessionStorage
-  // sets the JSON we'll be using to
-  let buildingAccountJSON = {
-    currentAccount: currentAccountPIDString,
-    availableAccounts: arrAccounts
-  };
-  // buildingAccountJSON = JSON.parse(buildingAccountJSON);
-  console.log('Our Build AccountJSON', JSON.stringify(buildingAccountJSON));
-  // sessionStorage storing Account
-  enterAccount(JSON.stringify(buildingAccountJSON));
-  console.log('Put AccountsJSON in sessionStorage');
-}
-
 
 // Removes an element from the document as specified by elementID
 function removeElement(elementId) {

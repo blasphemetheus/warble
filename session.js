@@ -50,6 +50,7 @@ function clearJustArray() {
 
 // returns the thing stored at Account in sessionStorage, returns null if null
 function accessAccount() {
+  console.log(sessionStorage.getItem("Account"));
   return sessionStorage.getItem("Account");
 }
 
