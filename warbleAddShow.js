@@ -4,7 +4,7 @@ function addExistingShowsToHTML() {
   let obj = pullOutStuffForAddShow();
   console.log('Obj', obj);
   let token = obj.token;
-  let account = obj.account;
+  let account = obj.accountID;
   let task = obj.task;
 
   // retrieve the account number
@@ -91,7 +91,7 @@ function doAddShow(showToAdd) {
   let object = pullOutStuffForAddShow();
   console.log('Our Info', object);
   let token = object.token;
-  let account = object.account;
+  let account = object.accountID;
 
   if (typeof showToAdd == "undefined") {
     console.error('Ooops didn\'t pass in a showToAdd');

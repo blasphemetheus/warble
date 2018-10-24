@@ -19,3 +19,18 @@ const allTasks = [{
 function allTaskArray() {
   return allTasks;
 }
+
+// returns the string representing the task passed in
+function taskToString(task) {
+  switch (task) {
+    case "addAllowedValueToTheShowCustomField":
+      return "Add a Show (really adding an allowedValue to a Custom Field)";
+      break;
+    case "generateBadTweet":
+      return "Generate a Bad Tweet (really randomly putting words together)";
+      break;
+    default:
+      throw new Error("Incorrect Task- invalid: " + task);
+      break;
+  }
+}

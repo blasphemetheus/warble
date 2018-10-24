@@ -125,7 +125,7 @@ function pullOutStuffForAddShow() {
 
   let accObj = accessAccount();
   accObj = JSON.parse(accObj);
-  let account = accObj.currentAccount;
+  let accountID = accObj.currentAccountID;
 
   let tskObj = accessTask();
   tskObj = JSON.parse(tskObj);
@@ -133,7 +133,7 @@ function pullOutStuffForAddShow() {
 
   let object = {
     'token': token,
-    'account': account,
+    'accountID': accountID,
     'task': task
   };
   return object;

@@ -3,16 +3,8 @@
 
 // [Hell, Is, Irony]
 
-// TODO every time you select a thing it reloads the page, so selectaccounts,
-// TODO checkPickAccount when ready, then that saves the picks, and then reloads the page, no clearing necessary
-// TODO ^^^^^^^^
-
-// ---------------------- cookie stuff, stuff that runs when the js is loaded ----------------- //
-
-logSession();
-displaySignOut();
-displayClearAccount();
-displayClearTask();
+// NOTE: uncomment logSession to have the various things we deal with in sessionStorage logged to console
+// logSession();
 
 // pull out string of JSON with name 'SignIn' from within all the cookies
 // if there isn't any such thing, signInCookie gets set to ""
@@ -22,6 +14,7 @@ if (!isSignedIn()) { // No, not signed in
   console.log('WELCOME - Logic Branch - No SignIn');
   // just do this to generate html (adds a SignIn button to end of file)
   displayLinkToSignIn();
+
 } else if (!isInAccount()) { // Yes - signedIn, but NOT in an Account
   console.log('WELCOME - Logic Branch - Yes SignIn, No Account');
   // since we don't have an accounts storage item , lets list accounts
@@ -37,14 +30,6 @@ if (!isSignedIn()) { // No, not signed in
 
 } else { // Yes - signin, Yes - Account, Yes - Task
   console.log('WELCOME - Logic Branch - Yes SignIn, Yes Account, Yes Task');
-
-  // just some reporting yo
-  console.log('signin', isSignedIn());
-  console.log('inaccount', isInAccount());
-  console.log('intask', isInTask());
-
-  //TODO portion here where we display all the info we have (json form and interpreted),
-  //TODO and ask if that is what you want? Ready to move on to actually doing it?
 
   // display all the info we got in the html (json form and interpreted), asks if this is what you want,
   // displays a button with 'i'm sure' on it that hits a function that sends us to warble.html
@@ -77,7 +62,6 @@ if (!isSignedIn()) { // No, not signed in
   document.body.appendChild(warble);
 }
 // ... -------------------- ... //
-//
 
 // reloads page
 function reload() {
@@ -90,28 +74,36 @@ function reload() {
 // then calls saveArrayAccounts with the info it has, then reloads
 function checkPickAccount(curAccount) {
 
-  let arrAccounts = getJustArray(); // gotta get the array of stuff out of storage (a workaround to design)
-  clearJustArray(); // after you retrieve the array bit, clear it from storage
+  let arrAccounts = getPossibleAccounts(); // gotta get the array of stuff out of storage (a workaround to design)
+  let arrAccountsObj = JSON.parse(arrAccounts);
 
-  let cAccount = curAccount;
+  function getSpecificAccountObject(arrAccountsObj, curAccount) {
+    let found;
+    for (let element of arrAccountsObj) {
+      let longId = element.id;
+      let shortId = retrieveLastTenChars(longId);
+      if (curAccount == shortId) {
+        return element;
+      }
+    }
+  }
+
+  let curAccountObj = getSpecificAccountObject(arrAccountsObj, curAccount);
+  console.log('The Object representing our Account: ', curAccountObj);
 
   //makes sure the current arrayAccounts (as given) is saved in sessionStorage
   // along with the selected one, overwrites previous sessionStorage string if there is one
 
-  /*Form -----    {selectedAccount : "pidOfSelectedAccount", listOfAccounts : [{accountObj1},{accountObj2}] }    */
   // this is the format of the JSON we will have in sessionStorage
   // sets the JSON we'll be using to
   let buildingAccountJSON = {
-    currentAccount: cAccount,
-    availableAccounts: arrAccounts
+    currentAccountID: curAccount,
+    currentAccountObj: curAccountObj,
   };
-  // buildingAccountJSON = JSON.parse(buildingAccountJSON);
-  console.log('Our Build AccountJSON', JSON.stringify(buildingAccountJSON));
-  console.log('Our Build AccountJSON', buildingAccountJSON);
+  console.log('The Account Object Getting Stored: ', buildingAccountJSON);
 
   // sessionStorage storing Account
-  enterAccount(JSON.stringify(buildingAccountJSON));
-  console.log('Put AccountsJSON in sessionStorage');
+  enterAccount(JSON.stringify(buildingAccountJSON, Symbol('\"')));
 }
 
 // given the currentTask (string)
@@ -139,7 +131,8 @@ function checkYouSure() {
     // redirect to warble.js, which is where we will do tasks. For now only add an allowedValue to Shows
     window.location.href = 'warble.html';
   } else { // if you got here in the ifs, I don't know what went wrong, logic or my brain has broken
-    new Error('Yo something DRASTIC went wrong, there is no stuff stored, check console for logs ');
+    logSession();
+    new Error('Yo something went wrong, the stuff stored is not totally correct, check console for logs');
   }
 }
 
@@ -149,17 +142,6 @@ function checkYouSure() {
 
 /// end eventListeners
 /* ONLY FUNCTIONS FROM HERE ON OUT */
-
-// function you can call that spits out all the SessionStorage stuff I'm dealing with
-function logSession() {
-  let act = accessAccount();
-  let signIn = accessSignIn();
-  let task = accessTask();
-
-  console.log('SignIn Storage: ', signIn);
-  console.log('Account Storage: ', act);
-  console.log('Task Storage: ', task);
-}
 
 // Removes an element from the document as specified by elementID
 function removeElement(elementId) {
@@ -188,8 +170,6 @@ function clearStuff() {
 // on submission of that form (multiple boxes checked, one, or none)
 // it saves the task info in sessionStorage and reloads page
 function selectTasks() {
-  console.log('Selecting a Task Now');
-
   // lets parse the signIn Object we put in sessionStorage previously
   let signInFo = JSON.parse(accessSignIn());
   // rn we only need the token part of the stached object, so lets pull that out
@@ -201,9 +181,9 @@ function selectTasks() {
 
   // same old same old but for account stuff
   let accountInFo = JSON.parse(accessAccount());
-  let currentAccount = accountInFo.currentAccount;
-  if (currentAccount == null) {
-    console.error('currentAccount is null and it should not be, check that entering account is working');
+  let currentAccountId = accountInFo.currentAccountID;
+  if (currentAccountId == null) {
+    console.error('currentAccountId is null and it should not be, check that entering account is working');
   }
 
   // header (informational, what step?)
@@ -232,12 +212,6 @@ function selectTasks() {
   ferm.setAttribute('class', 'selectTask');
   // on click, this form'll activates checkPickTask, which does all that is necessary
   document.body.appendChild(ferm);
-
-
-  // <form name="myform" onsubmit="alert(this.submited); return false;">
-  //     <input onclick="this.form.submited=this.value;" type="submit" value="Yes" />
-  //     <input onclick="this.form.submited=this.value;" type="submit" value="No" />
-  // </form>
 
   allTasksArray.forEach((element) => {
     let name = element.name;
@@ -270,8 +244,6 @@ function selectTasks() {
 // list the accounts linked to this token, display appropriate
 //messaging if token is invalid, specify behavior when Select button is pressed
 function selectAccounts() {
-  console.log('Selecting an Account Now');
-
   // lets parse the signIn Object we put in sessionStorage previously
   signInFo = JSON.parse(accessSignIn());
   // rn we only need the token part of the stached object, so lets pull that out
@@ -283,7 +255,7 @@ function selectAccounts() {
 
   // header (informational, what step?)
   var header = document.createElement('h3');
-  header.innerHTML = "Which Network do you want to update?";
+  header.innerHTML = "Which Account?";
 
   var para = document.createElement('p');
   para.innerHTML = "What follows are the accounts you can see, based on your credentials. Click on the button of the account you would like to use";
@@ -291,99 +263,94 @@ function selectAccounts() {
   document.getElementById('content').appendChild(header);
   document.getElementById('content').appendChild(para);
 
-  // asynchroniously get the JSON with the array of account representations
-  // --- .... ---
-  const xht = new XMLHttpRequest();
+  console.log('Fetching accounts for user to choose from');
+
   // the url to list accounts associated with the TOKEN we have (passed in at beginning of fn)
   const urlListAccounts = 'https://web.mpx.theplatform.com/cws/web/Shell/lookupAccount' +
     '?schema=2.0&form=json&token=' + platToken + '&_pattern';
-  // open up a get request to the url, have it return a response with a body
-  xht.open("GET", urlListAccounts, true);
 
-  // here we define the function to do when the thing is loaded
-  xht.onload = () => {
-    console.log("onload Triggered for ListAccounts Request");
-    let response = xht.response;
-    console.log("ListAccounts request", response);
-    let listAccountsResponseObject = JSON.parse(response);
-    // let response = res.lookupAccountResponse.result;
-    /* FORM of response
-        {"lookupAccountResponse" : {
-          "result" : [{
-          "pid" : "lkajsdlk",
-          "label" : "NAME OF ACCOUNT",
-          "id" : "urlurlurlurlurl/Account/2468234234"
-        }, ... ]
+  fetch(urlListAccounts)
+    .then((response) => response.json())
+    // here we define the function that tells it what to do when the response is loaded
+    .then((myJSON) => {
+      /* FORM of response
+          {"lookupAccountResponse" : {
+            "result" : [{
+            "pid" : "lkajsdlk",
+            "label" : "NAME OF ACCOUNT",
+            "id" : "urlurlurlurlurl/Account/2468234234"
+          }, ... ]
+        }
       }
-    }
-    */
+      */
+      console.log("onload Triggered for ListAccounts Request");
+      console.log("ListAccounts request", myJSON);
+      let stringJSON = JSON.stringify(myJSON);
+      console.log('String of JSON: ', stringJSON);
 
-    // logic for determining if lookupAccountResponse is present, ie whether the listAccounts request failed or not
-    if (listAccountsResponseObject.lookupAccountResponse == null) {
-      // lookup failure
-      displayString('ERROR ERROR ERROR, LOOKUP LISTACCOUNTS FAILURE, Please login again');
-      console.error('No response exists, problem in your logic for onload?');
-      new Error('this is an error');
-      // i dunno if these errors take you out of this fn, so just in case i'm putting em in
-      // TODO take out if not necessary
-      return;
-    }
+      // logic for determining if lookupAccountResponse is present, ie whether the listAccounts request failed or not
+      if (myJSON.lookupAccountResponse == null) {
+        // lookup failure
+        displayString('ERROR ERROR ERROR, LOOKUP LISTACCOUNTS FAILURE, Please login again');
+        console.error('No response exists, problem in your logic for onload?');
+        new Error('this is an error');
+        // i dunno if these errors take you out of this fn, so just in case i'm putting em in
+        // TODO take out if not necessary
+        return;
+      }
 
-    // !!!! lookup success (response not undefined) !!!!
+      console.log('Accounts lookup successful');
+      //Here is the array of items returned by this lookup
+      arrayAccounts = myJSON.lookupAccountResponse.result;
+      console.log("Array of Accounts: ", arrayAccounts);
 
-    //Here is the array of items returned by this lookup
-    arrayAccounts = listAccountsResponseObject.lookupAccountResponse.result;
-    console.log("arrayAccounts: ", arrayAccounts);
-    addJustArray(arrayAccounts);
+      // TODO: get rid of this hacky addJustArray functionality and make the account object just have all this in it
+      // for reference, I'm currently saving the arrayAccounts for later when we build the object we'll save in sessionStorage,
+      // when we use the arrayAccounts to build the Accounts saved object, then I will clear out the arrayAccounts
+      // item in sessionStorage
+      addPossibleAccounts(arrayAccounts);
 
-    //
-    // <form name="myform" onsubmit="alert(this.submited); return false;">
-    //     <input onclick="this.form.submited=this.value;" type="submit" value="Yes" />
-    //     <input onclick="this.form.submited=this.value;" type="submit" value="No" />
-    // </form>
+      // makin the form we'll use to select a specific account
+      // on submission, this form activates checkPickAccount, which does all that is necessary
+      let f = document.createElement('form');
+      f.setAttribute('id', 'selectAccountForm');
+      // this next line is crucial, could sub out the function but alert(this.submitted),
+      //  then we set onclick to be 'this.form.submitted=this.value;' in each input
+      f.setAttribute('onsubmit', 'checkPickAccount(this.submited);');
+      f.setAttribute('class', 'selectAccountForm');
+      document.body.appendChild(f);
 
-    // makin the form we'll use
-    let f = document.createElement('form');
-    f.setAttribute('id', 'selectAccountForm');
+      let explain = document.createElement('p');
+      explain.textContent = "<name of the account> : <id number of the account> : <public identifier of the network the account is linked to>"
+      document.body.appendChild(explain);
 
-    // on submission, this form activates checkPickAccount, which does all that is necessary
+      // go through each object in arrayAccounts and create an html representation of it
+      // with a button after it
+      arrayAccounts.forEach((element) => {
+        let pid = element.pid;
+        let id = element.id;
+        let label = element.label;
+        // call the function that we made just to retrieve out the last ten chars from a string
+        let shortID = retrieveLastTenChars(element.id);
 
-    // this line is crucial, could sub out the function but aler(this.submitted),
-    //  then we set onclick to be 'this.form.submitted=this.value;' in each input
-    f.setAttribute('onsubmit', 'checkPickAccount(this.submited);');
-    f.setAttribute('class', 'selectAccountForm');
+        let lab = document.createElement('label');
+        lab.innerHTML = label + " \t\t: " + shortID + ' \t\t: ' + pid + ' \t\t';
 
-    document.body.appendChild(f);
+        // have it print out a <label> with label variable inside of it </label>
+        let inp = document.createElement('input');
+        inp.setAttribute('type', 'submit');
+        inp.setAttribute('name', 'whichAccount');
+        inp.setAttribute('value', shortID);
+        inp.setAttribute('shortId', shortID);
+        inp.setAttribute('PID', pid);
+        inp.setAttribute('label', label);
+        inp.setAttribute('onclick', 'this.form.submited=this.value');
 
-    arrayAccounts.forEach((element) => {
-      let pid = element.pid;
-      let id = element.id;
-      let label = element.label;
-      let shortID = element.id.substring(element.id.length - 10, element.id.length);
-
-
-      let lab = document.createElement('label');
-      lab.innerHTML = label + " : " + shortID + ' : ' + pid;
-
-      // have it print out a <label> with label variable inside of it </label>
-      let inp = document.createElement('input');
-      inp.setAttribute('type', 'submit');
-      inp.setAttribute('name', 'whichAccount');
-      inp.setAttribute('value', shortID);
-      inp.setAttribute('shortId', shortID);
-      inp.setAttribute('PID', pid);
-      inp.setAttribute('label', label);
-      inp.setAttribute('onclick', 'this.form.submited=this.value');
-
-      document.getElementById('selectAccountForm').appendChild(lab);
-      document.getElementById('selectAccountForm').appendChild(inp);
-      document.getElementById('selectAccountForm').appendChild(document.createElement('br'));
-    });
-
-    console.log('onload ending for ListAccounts request');
-  } // end of onload
-
-  xht.send(); // sends the fn to get listAccounts
+        document.getElementById('selectAccountForm').appendChild(lab);
+        document.getElementById('selectAccountForm').appendChild(inp);
+        document.getElementById('selectAccountForm').appendChild(document.createElement('br'));
+      }); // end of foreach of arrayAccounts
+    }); // end of then fn (like onload)
 } // end of selectAccounts() fn
 
 
@@ -401,54 +368,18 @@ function toggleHidden() {
   }
 }
 
-
-// appends to hidden, a link that clears your account sessionStorage
-function displayClearAccount() {
-  let link = document.createElement('a');
-  link.className = 'clearAccount';
-  link.setAttribute('href', 'javascript: exitAccount()');
-  link.innerHTML = "clear account <br>";
-
-  var parentNode = document.getElementById('hidden');
-  parentNode.appendChild(link);
-}
-
-// appends to hidden, a link that clears your task sessionStorage
-function displayClearTask() {
-  let link = document.createElement('a');
-  link.className = 'clearTask';
-  link.setAttribute('href', 'javascript: exitTask()');
-  link.innerHTML = "clear task <br>";
-
-  let parent = document.getElementById('hidden');
-  parent.appendChild(link);
-}
-
-// appends to hidden, a link that signs you out (clears your signin sessionStorage)
-function displaySignOut() {
-  let link = document.createElement('a');
-  link.className = 'signOut';
-  link.setAttribute('href', 'javascript: signOut()');
-  link.innerHTML = "Sign Out <br>";
-
-  let parent = document.getElementById('hidden');
-  parent.appendChild(link);
-}
-
 // appends to end of file, the Button directing you to login again
 function displayLinkToSignIn() {
-
   // creating the child (of hidden)
   let div = document.createElement('div');
   // give it a class
   div.className = 'LoginPlease';
+  div.textContent = 'Click the button to login';
   div.innerHTML = '<button class="redirect" type="button" onclick="redirectLogin()" height="100">click to ReLogin</button>';
-
   // putting in the child
   var parentNode = document.body;
   parentNode.appendChild(div);
 }
-
 
 // function that redirects back to login page
 function redirectLogin() {
@@ -476,6 +407,11 @@ function boom() {
 
 
 // -------------------------------
+
+// given a string, retrieves the last ten characters of it
+function retrieveLastTenChars(longId) {
+  return longId.substring(longId.length - 10, longId.length);
+}
 
 
 // function addEventListeners() {

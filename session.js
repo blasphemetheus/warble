@@ -1,3 +1,18 @@
+// function you can call that spits out all the SessionStorage stuff I'm dealing with
+function logSession() {
+  let act = accessAccount();
+  let signIn = accessSignIn();
+  let task = accessTask();
+  let posAc = getPossibleAccounts();
+
+  console.log('---Commence Log of relevant storage---');
+  console.log('SignIn Storage: ', signIn);
+  console.log('Account Storage: ', act);
+  console.log('Task Storage: ', task);
+  console.log('Possible Accounts: ', posAc);
+  console.log('---End Log of relevant storage---');
+}
+
 // returns the thing stored at SignIn in sessionStorage, returns null if null
 function accessSignIn() {
   return sessionStorage.getItem("SignIn");
@@ -30,17 +45,17 @@ function signOut() {
 }
 
 // ----------------------------
-function addJustArray(added) {
+function addPossibleAccounts(added) {
   added = JSON.stringify(added);
-  sessionStorage.setItem('Array', added);
+  sessionStorage.setItem('PossibleAccounts', added);
 }
 
-function getJustArray() {
-  return sessionStorage.getItem('Array');
+function getPossibleAccounts() {
+  return sessionStorage.getItem('PossibleAccounts');
 }
 
-function clearJustArray() {
-  sessionStorage.removeItem('Array');
+function clearPossibleAccounts() {
+  sessionStorage.removeItem('PossibleAccounts');
 }
 
 // ----------------------------
@@ -50,7 +65,6 @@ function clearJustArray() {
 
 // returns the thing stored at Account in sessionStorage, returns null if null
 function accessAccount() {
-  console.log(sessionStorage.getItem("Account"));
   return sessionStorage.getItem("Account");
 }
 
@@ -161,7 +175,7 @@ function worldState(type) {
       if (isInAccount()) {
         account = accessAccount();
       } else { // just some dummy object to display 'No Account' in currentAccount spot
-        account = '{"currentAccount": "NoAccount"}';
+        account = '{"currentAccountID": "NoAccount"}';
       }
 
       if (isInTask()) {
@@ -171,13 +185,21 @@ function worldState(type) {
       }
       // parse each string
       signin = JSON.parse(signin);
-      account = JSON.parse(account);
+      accountObj = JSON.parse(account);
       task = JSON.parse(task);
 
+      console.log(accountObj);
+      console.log(accountObj.currentAccountObj);
+      let otherAccountObj = accountObj.currentAccountObj;
+      let accountName = otherAccountObj.label;
+      console.log(accountName);
+
       signin = signin.userName;
-      account = account.currentAccount;
+      accountId = accountObj.currentAccountID;
       task = task.currentTask;
-      return "SignIn: " + signin + '\n' + '||| Account: ' + account + '\n' + '||| Task: ' + task + '\n';
+
+      let taskExplain = taskToString(task);
+      return "SignIn: " + signin + '\n' + '||| Account: ' + 'Name="' + accountName + '"   ID=' + accountId + '\n' + '||| Task: ' + taskExplain + ' - ' + task + '\n';
       break;
     default:
       new Error('You tried to use worldState but did\'t specify a vaild type');

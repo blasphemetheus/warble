@@ -1,3 +1,13 @@
+// <form name="myform" onsubmit="alert(this.submited); return false;">
+//     <input onclick="this.form.submited=this.value;" type="submit" value="Yes" />
+//     <input onclick="this.form.submited=this.value;" type="submit" value="No" />
+// </form>
+
+
+/* this is useful ^^ */
+
+
+
 /* FROM warble.js 's first iteration, where I was figuring out working with DOM stuff */
 
 // given an array of Accounts, adds the list of accounts into the form

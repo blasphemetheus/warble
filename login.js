@@ -95,53 +95,6 @@ function updateHTMLFailure(response) {
   document.getElementById("loginResponse").innerHTML = '<span style="color:red">Your login failed, try again </span>';
 }
 
-// the function that happens after you successfully fetch a response and have all the data to 'log in'
-function updateHTMLSuccess(token) {
-  // do stuff because login succeeded
-  lastAttempt.textContent = 'Success!';
-  lastAttempt.style.backgroundColor = 'cyan';
-  errorCase.textContent = 'No Error - token retrieved';
-  document.getElementById("loginResponse").innerHTML = '<h1 style="color:green">Successful Login</h1>';
-
-  // change html
-  lastAttempt.textContent = 'You logged in successfully - got token: ' + token;
-  lastAttempt.style.backgroundColor = 'green';
-  errorCase.textContent = 'Success - redirecting now ...';
-
-  // half the time it changes background color to pink, half to green
-  let random = Math.floor(Math.random() * 2);
-  if (random == 0) {
-    // CHANGES BACKGROUND TO PINK
-    let styl = document.createElement('style');
-    styl.innerHTML = 'body { background-color: #d24dff;}';
-
-    document.head.appendChild(styl);
-  } else if (random == 1) {
-    document.body.style.backgroundColor = 'green';
-  } else {
-    console.log('oops I guess I don\'t understand the random fn');
-  }
-  // end of random section
-
-  // TODO make this countdown more advanced, have a countdown and write a function that adds one to the countdown displayed
-  //wait 3 seconds with countdown
-  //alert('redirecting...');
-
-  // put the data we want to save into a cookie (the whole JSON for now
-  // TODO make more secure, encode, obfuscate, don't include sensitive information)
-
-  // wait a third of a second then display Redirecting ...
-  let timerId = setTimeout(() => document.getElementById("redirecting").innerHTML = '<h1>redirect ...</h1>', 333);
-
-  //navigate to the welcome page of wobble
-  // TODO So this doesn't move the window,window.location.href = "welcome.html" will do the trick
-  // TODO But if we want to POST, or at the Very Least transfer information somewhat securely between pages of
-  // TODO a website (i want to do this), I need to figure out how to do that via Javascript
-
-  // let timerId2 = setTimeout(() => window.location.href = 'welcome.html', 2000);
-  let timerId2 = setTimeout(() => window.location.href = 'welcome.html', 1000);
-}
-
 //sends an http request to get a new token, given the username and password. Returns false if unsuccessful for any reason.
 // if successful, returns the token
 function requestToken(username, password, encodedString) {
@@ -211,7 +164,8 @@ function receiveLoginResponse(data) {
     // json.stringify so we pass it a string
     signIn(JSON.stringify(data.signInResponse));
 
-    updateHTMLSuccess(token);
+    // redirects the browser to welcome.html
+    window.location.href = 'welcome.html';
   } else {
     // if we wanna do anything for repeated attempts
     if (numAttempts > 3) {
