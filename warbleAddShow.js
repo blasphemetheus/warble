@@ -1,55 +1,108 @@
-function doFetchForAddShows(body, urlToAddShows) {
-  console.log('DID IT WORK', body);
-  //TODO: Set passingInBody = {thejsonwespecify}
+// function doFetchForAddShows(body, urlToAddShows) {
+//   console.log('DID IT WORK', body);
+//   //TODo: Set passingInBody = {thejsonwespecify}
+//
+//   // // put response in html (body)
+//   // let response = document.createElement('div');
+//   // response.setAttribute('id', 'response');
+//   // response.style = 'color=green;';
+//   // document.body.appendChild(response);
+//   //
+//   // // pull out the thing we just put in html and set responseText as it
+//   // var responseText = document.getElementById('response');
+//   //
+//   // if (showToAdd == '') {
+//   //   responseText.innerHTML = 'you didn\'t enter in anything for your Show To Add, try again pls, enter stuff this time';
+//   // }
+//
+//   fetch(urlToAddShows, {
+//       method: "POST",
+//       body: JSON.stringify(body),
+//       headers: {
+//         "Content-Type": "application/json",
+//       }
+//     }).then(res => res.json())
+//     .then(data => {
+//       console.log('Success: ', JSON.stringify(data))
+//       // refresh page
+//       window.location.href = 'warble.html';
+//     })
+//     .catch(error => console.error(error));
+// }
 
-  // // put response in html (body)
-  // let response = document.createElement('div');
-  // response.setAttribute('id', 'response');
-  // response.style = 'color=green;';
-  // document.body.appendChild(response);
-  //
-  // // pull out the thing we just put in html and set responseText as it
-  // var responseText = document.getElementById('response');
-  //
-  // if (showToAdd == '') {
-  //   responseText.innerHTML = 'you didn\'t enter in anything for your Show To Add, try again pls, enter stuff this time';
-  // }
 
-  fetch(urlToAddShows, {
-      method: "POST",
-      // mode: "no-cors",
-      body: JSON.stringify(body),
-      headers: {
-        "Content-Type": "application/json",
-        // "Accept": "application/json"
-        // "Cache-Control": "no-cache",
-      }
-    }).then(res => res.json())
-    .then(data => {
-      console.log('Success: ', JSON.stringify(data))
-      // refresh page
-      window.location.href = 'warble.html';
-    })
-    .catch(error => console.error(error));
+// returns as a string the custom field Shows number for the given account number. or "" with error thrown
+function getCustomFieldForAccount(account) {
+  // this bit is us telling it which customField number to use in the link
+  let cfNumber = "";
+  switch (account) {
+    case DEV_MAIN_ACCOUNT:
+      return DEV_MAIN_ACCOUNT_CF_SHOWS;
+      break;
+    case STAGE_MAIN_ACCOUNT:
+      return STAGE_MAIN_ACCOUNT_CF_SHOWS;
+      break;
+    case PROD_MAIN_ACCOUNT:
+      return PROD_MAIN_ACCOUNT_CF_SHOWS;
+      break;
+    case STAGE_WETV:
+      return STAGE_WETV_CF_SHOWNAME;
+    default:
+      throw new Error('Unrecognized account, cannot add shows: ', account);
+      return "";
+      break;
+  }
 }
 
+// returns the url to add a show given a token
+function urlToAddShow(token) {
+  return "http://data.media.theplatform.com/media/data/Media/Field" + "?token=" + token + "&fields=plfield%24allowedValues%2Ctitle%2Cid%2Cguid" +
+    "&schema=1.8.0";
+  // OTHER URL FORMAT:
+  // const addShowURL = "http://data.media.theplatform.com/media/data/Media/Field/" + customFieldNumber +
+  //   "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true" +
+  //   "&token=" + token;
+}
+
+// returns the url to get the existing shows given a token and a customfield_identifier
+function urlToGetShows(token, cf_identifier) {
+  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
+    "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
+  return getAllowedValuesForShowsURL;
+}
+
+// returns an object that will be the body of a post request to allowedValues of a specific 'Show' custom field
+// given an accountID (which account are you making the change  to) and arrayShows (the array of values to make the allowedValues)
+function bodyOfAddShow(accountID, arrayShows) {
+
+  let cf_id = getCustomFieldForAccount(accountID);
+  console.log('Custom Field Identifier: ', cf_id);
+
+  let returnThisObject = {
+    "$xmlns": {
+      "plfield": "http://xml.theplatform.com/data/object/Field"
+    },
+    "id": "http://data.media.theplatform.com/media/data/Media/Field/" + cf_id,
+    "plfield$allowedValues": arrayShows
+  }
+  return returnThisObject;
+}
+
+
 // this function actually adds the show (making ajax calls, responds to them etc)
-function add(showToAdd) {
+function doAddShow(showToAdd) {
   console.log('actually adding show', showToAdd);
 
   // assemble data, put into object. rn: (token, account, task) are the fields
   let object = pullOutStuffForAddShow();
   console.log('Our Info', object);
-  let token = object.token;
-  let account = object.accountID;
+  let tok = object.token;
+  let acc = object.accountID;
 
   //------- define / grab stuff
 
   // showToAdd is passed in, should be a string
-  //
-  let acc = "2676155873";
-  let tok = "67891";
-  let arrSh = ['1', '2', '3', '4'];
+
   // assemble data, put into object. rn: (token, account, task) are the fields
   // let world = pullOutStuffForAddShow();
   // console.log('Our Info', world);
@@ -57,7 +110,7 @@ function add(showToAdd) {
   // let account = object.accountID;
 
   // retrieve the account number
-  let cf_identifier = getCFShows(acc);
+  let cf_identifier = getCustomFieldForAccount(acc);
 
   //------- check the stuff we grabbed
 

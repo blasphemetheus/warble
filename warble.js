@@ -71,7 +71,7 @@ function init_AddShow() {
 
 
     // retrieve the account number
-    let customFieldNumber = getCFShows(account);
+    let customFieldNumber = getCustomFieldForAccount(account);
     const existingShowsURL = urlToGetShows(token, customFieldNumber);
 
     // does the request, starts the things that happen after
