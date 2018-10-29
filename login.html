@@ -3,18 +3,24 @@
 <head>
   <meta charset="utf-8">
   <title>Login (to Warble)</title>
-  <!-- <script src="base64js.min.js"></script> -->
   <script src="session.js" defer></script>
+  <script src="tasks.js" defer></script>
   <script src="login.js" defer></script>
 
 </head>
 
 <body>
+  <header class='header'>
+    <h1>Login (to Warble)</h1>
+    <p>Please Login to use Warble</p>
+    <a href='javascript: signOut(); window.location.href = "login.html"' class='signOut'>Sign Out</a>
+    <hr>
+    <hr>
+    <hr>
+  </header>
+
   <p id="responseID"></p>
   <p id="loginResponse"></p>
-  <h1>Login (to Warble)</h1>
-  <p>Please Login to use Warble</p>
-
 
   <div class="form">
     <label for="usernameField">Enter a username: </label>
@@ -27,7 +33,6 @@
   </div>
 
   <div class="resultParas">
-    <p class="numAttempts"></p>
     <p class="lastAttempt"></p>
     <p class="errorCase"></p>
   </div>

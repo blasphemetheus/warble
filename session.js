@@ -13,6 +13,27 @@ function logSession() {
   console.log('---End Log of relevant storage---');
 }
 
+/////
+// stores the existing shows (given an array) in sessionStorage as a string
+function storeExistingShows(arrayShows) {
+  sessionStorage.setItem("existing_shows", JSON.stringify(arrayShows));
+}
+
+// access the existing shows, then immediately deletes it, returns an array
+function accessExistingShowsOnce() {
+  tempArray = sessionStorage.getItem('existing_shows');
+  clearExistingShows();
+  tempArray = JSON.parse(tempArray);
+  return tempArray;
+}
+
+// DOESN'T RELOAD, clears out session storage for existing_shows
+function clearExistingShows() {
+  sessionStorage.removeItem("existingShows"); //(or if that doesn't work sessionStorage.clear(), deletes all sessionStorage stuff)
+}
+
+//////
+
 // returns the thing stored at SignIn in sessionStorage, returns null if null
 function accessSignIn() {
   return sessionStorage.getItem("SignIn");
@@ -246,4 +267,29 @@ function checkCookie() {
       setCookie("username", user, 365);
     }
   }
+}
+
+
+function showClearOptions() {
+  let o = document.createElement('div');
+  o.innerHTML = '<a href="javascript: exitAccount()" class="clearAccount">Clear Account Selection</a> <br>' +
+    '<a href="javascript: exitTask()" class="clearTask">Clear Task Selection</a>';
+  document.body.appendChild(o);
+}
+
+function displayLoginStatus() {
+  let status = 'NOT SIGNED IN';
+
+  if (isSignedIn()) {
+
+
+    let obj = accessSignIn();
+    obj = JSON.parse(obj);
+    status = obj.userName;
+  }
+  let p = document.createElement('p');
+  p.textContent = 'Sign-in status: ' + status;
+
+  document.body.appendChild(p);
+
 }

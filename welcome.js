@@ -16,50 +16,17 @@ if (!isSignedIn()) { // No, not signed in
   displayLinkToSignIn();
 
 } else if (!isInAccount()) { // Yes - signedIn, but NOT in an Account
+  displayLoginStatus();
   console.log('WELCOME - Logic Branch - Yes SignIn, No Account');
   // since we don't have an accounts storage item , lets list accounts
 
   // display the prompt for choosing an account, it'll error out if we don't have a signin
   selectAccounts();
 
-} else if (!isInTask()) { // Yes - signIn, Yes - Account, No - Task
-  console.log('WELCOME - Logic Branch - Yes SignIn, Yes Account, No Task');
-
-  // display the prompt for choosing a task, it'll error out if we don't have what we need
-  selectTasks();
-
 } else { // Yes - signin, Yes - Account, Yes - Task
   console.log('WELCOME - Logic Branch - Yes SignIn, Yes Account, Yes Task');
 
-  // display all the info we got in the html (json form and interpreted), asks if this is what you want,
-  // displays a button with 'i'm sure' on it that hits a function that sends us to warble.html
-  console.log('asking user: you sure bout this? <displays data>');
-
-  // the form element (big)
-  let yousure = document.createElement('form');
-  yousure.setAttribute('class', 'YouSureForm');
-  yousure.textContent = 'You sure?';
-
-  let linebreak = document.createElement('br');
-
-  // a div with json bit
-  let explanation = document.createElement('div');
-  explanation.textContent = 'This is what you input: ';
-
-  let displayPlain = document.createElement('p');
-  displayPlain.textContent = worldState('plain');
-
-  let warble = document.createElement('button');
-  warble.setAttribute('onclick', 'checkYouSure();');
-  warble.innerHTML = 'Move On';
-
-  document.body.appendChild(yousure);
-  document.body.appendChild(linebreak);
-  document.body.appendChild(explanation);
-  document.body.appendChild(linebreak);
-  document.body.appendChild(displayPlain);
-
-  document.body.appendChild(warble);
+  window.location.href = 'warble.html';
 }
 // ... -------------------- ... //
 
@@ -106,22 +73,6 @@ function checkPickAccount(curAccount) {
   enterAccount(JSON.stringify(buildingAccountJSON, Symbol('\"')));
 }
 
-// given the currentTask (string)
-// the function that gets called when user presses the button for choosing a task
-function checkPickTask(currentTask) {
-  /*Form -----    {selectedAccount : "pidOfSelectedAccount", listOfAccounts : [{accountObj1},{accountObj2}] }    */
-  // this is the format of the JSON we will have in sessionStorage
-  // sets the JSON we'll be using to
-
-  let buildingTaskJSON = {
-    currentTask: currentTask,
-  };
-  console.log('Our Build TaskJSON', JSON.stringify(buildingTaskJSON));
-  // sessionStorage storing Task
-  enterTask(JSON.stringify(buildingTaskJSON));
-  console.log('Put TaskJSON in sessionStorage');
-}
-
 // the fuction that gets called when user presses the warble button after choosing everything
 function checkYouSure() {
   console.log('you checked, and were sure');
@@ -164,77 +115,6 @@ function clearStuff() {
 
 // ... -------------------- ... //
 
-
-// if we don't have the stored things we need it will error out (ie signin, account)
-// populates and displays prompt (form) for selecting tasks,
-// on submission of that form (multiple boxes checked, one, or none)
-// it saves the task info in sessionStorage and reloads page
-function selectTasks() {
-  // lets parse the signIn Object we put in sessionStorage previously
-  let signInFo = JSON.parse(accessSignIn());
-  // rn we only need the token part of the stached object, so lets pull that out
-  let platToken = signInFo.token;
-  //throw error if no token
-  if (platToken == null) {
-    console.error('Token is null and shouldn\'t be, check that logging in is working properly');
-  }
-
-  // same old same old but for account stuff
-  let accountInFo = JSON.parse(accessAccount());
-  let currentAccountId = accountInFo.currentAccountID;
-  if (currentAccountId == null) {
-    console.error('currentAccountId is null and it should not be, check that entering account is working');
-  }
-
-  // header (informational, what step?)
-  let header = document.createElement('h3');
-  header.innerHTML = "What Task do you want to do?";
-
-  let para = document.createElement('p');
-  para.innerHTML = "The following are tasks you can do. Email bradley.fargo@amcnetworks.com if you would like more of these.";
-
-  document.getElementById('content').appendChild(header);
-  document.getElementById('content').appendChild(para);
-
-  // START THE ACTUAL FUNCTION NOW
-
-  // get the array of tasks
-  // --- .... ---
-  let allTasksArray = allTaskArray();
-  console.log('all them tasks', allTasksArray);
-
-  // make form we'll use
-  let ferm = document.createElement('form');
-  ferm.setAttribute('id', 'selectTask');
-  // this line is crucial, could sub out the function but alert(this.submitted),
-  //  then we set onclick to be 'this.form.submitted=this.value;' in each input
-  ferm.setAttribute('onsubmit', 'checkPickTask(this.submited);');
-  ferm.setAttribute('class', 'selectTask');
-  // on click, this form'll activates checkPickTask, which does all that is necessary
-  document.body.appendChild(ferm);
-
-  allTasksArray.forEach((element) => {
-    let name = element.name;
-
-    let lab = document.createElement('label');
-    lab.innerHTML = name;
-
-    // have it print out a <label> with label variable inside of it </label>
-    let inp = document.createElement('input');
-    inp.setAttribute('type', 'submit');
-    inp.setAttribute('name', name);
-    inp.setAttribute('value', name);
-    inp.setAttribute('onclick', 'this.form.submited=this.value');
-
-    document.getElementById('selectTask').appendChild(lab);
-    document.getElementById('selectTask').appendChild(inp);
-    document.getElementById('selectTask').appendChild(document.createElement('br'));
-  });
-
-  // eventually we need a foreach loop that runs through each task in a list and creates
-  //      an item for them so you can select them
-  console.log('you\'ve reached the select task bit');
-}
 // ---------------------- END memory functionality ----------------- //
 /// The other method for form submit
 
@@ -352,21 +232,6 @@ function selectAccounts() {
       }); // end of foreach of arrayAccounts
     }); // end of then fn (like onload)
 } // end of selectAccounts() fn
-
-
-// reveals all the hidden stuff, or hides it all
-function toggleHidden() {
-  // MAKE THE buttons do the boom thing
-  let hiddens = document.querySelectorAll('#hidden');
-  // run through every button in array, add an eventListener for click that calls boom
-  for (var i = 0; i < hiddens.length; i++) {
-    if (document.getElementById("hidden").style.display === 'none') {
-      document.getElementById("hidden").style.display = 'block';
-    } else {
-      document.getElementById("hidden").style.display = 'none';
-    }
-  }
-}
 
 // appends to end of file, the Button directing you to login again
 function displayLinkToSignIn() {

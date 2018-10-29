@@ -10,14 +10,14 @@ function debugOptions() {
 
 
 // if you're already signed in you can't sign in again until you log out silly
-if (isSignedIn() == true) {
-  window.location.href = 'welcome.html';
+if (isSignedIn()) {
+  displayLoginStatus();
+  selectTask();
 } else {
   // if you aren't signed in, clears all the rest of the sessionStorage stuff
   sessionStorage.clear();
 }
 
-var numAttempts = document.querySelector('.numAttempts');
 var lastAttempt = document.querySelector('.lastAttempt');
 var errorCase = document.querySelector('.errorCase');
 
@@ -164,13 +164,10 @@ function receiveLoginResponse(data) {
     // json.stringify so we pass it a string
     signIn(JSON.stringify(data.signInResponse));
 
-    // redirects the browser to welcome.html
-    window.location.href = 'welcome.html';
+
+    selectTask();
+    displayLoginStatus();
   } else {
-    // if we wanna do anything for repeated attempts
-    if (numAttempts > 3) {
-      console.error('num attempts GREATER THAN 3 OMG');
-    }
     updateHTMLFailure(data);
   }
 }
@@ -183,13 +180,6 @@ function checkLogin() {
 
   var password = passwordField.value;
   console.log('The password value is ' + password);
-
-  // if this is first attempt, set numAttempts to 'Previous Attempts: '
-  if (attemptCount === 1) {
-    numAttempts.textContent = 'Previous Attempts: ';
-  }
-  // append the current username and password
-  numAttempts.textContent += username + ':' + password + ' ';
 
   // TODO attempt happens
 
@@ -212,8 +202,6 @@ function checkLogin() {
   // call requestToken, which returns the token if successful or false if not ?? TODO
   requestToken(username, password, encodedString);
 
-  // add one to the attempts counter
-  numAttempts++;
   // reset values of username/password
   usernameField.value = '';
   passwordField.value = '';
@@ -228,4 +216,35 @@ function createParagraph() {
   var paragra = document.createElement('p');
   paragra.textContent = 'boom';
   document.body.appendChild(paragra);
+}
+
+
+
+// -------- //
+
+// displays a button with add show (with label - adds an allowedValue to a 'Shows' (or similar-named) custom field)
+function selectTask() {
+  // lets parse the signIn Object we have in sessionStorage
+  let signInObj = JSON.parse(accessSignIn());
+  // rn we only need the token part of the stached object, so lets pull that out
+  let platToken = signInObj.token;
+  //throw error if no token
+  if (platToken == null) {
+    console.error('Token is null and shouldn\'t be, check that logging in is working properly');
+  }
+
+  // header (informational, what step?)
+  let header = document.createElement('h3');
+  header.innerHTML = "Let's add a show";
+
+  let para = document.createElement('p');
+  para.innerHTML = "ie. select an account to modify and add an allowedValue to the 'Shows' custom-field";
+
+  let btn = document.createElement('button');
+  btn.innerHTML = 'Start Adding Shows';
+  btn.setAttribute('onclick', 'javascript: enterTask(\'{"currentTask" : "cf_addShow"}\'); window.location.href = "welcome.html"')
+
+  document.body.appendChild(header);
+  document.body.appendChild(para);
+  document.body.appendChild(btn)
 }
