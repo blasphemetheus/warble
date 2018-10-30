@@ -1,19 +1,44 @@
 //This document details what's gonna happen on the warble.html page due to Javascript
 
-//TODO If stuff changes in the future then these values
-const APPEND_TO_MAKE_FULL_ID = "http://data.media.theplatform.com/media/data/Media/Field/";
+function storeCustomFieldIfExists() {
+  let thing = accessAccount();
+  console.log(thing);
+  thing = JSON.parse(thing);
+  let shortID = thing.currentAccountID;
+  console.log(shortID);
 
-const DEV_MAIN_ACCOUNT = "2686406403";
-const DEV_MAIN_ACCOUNT_CF_SHOWS = "214169463";
 
-const STAGE_MAIN_ACCOUNT = "2649273223";
-const STAGE_MAIN_ACCOUNT_CF_SHOWS = "155289480";
+  let longAccountID = "http%3A%2F%2Faccess.auth.theplatform.com%2Fdata%2FAccount%2F" + shortID;
 
-const PROD_MAIN_ACCOUNT = "2649321885";
-const PROD_MAIN_ACCOUNT_CF_SHOWS = "156313528";
 
-const STAGE_WETV = '2676155873';
-const STAGE_WETV_CF_SHOWNAME = '183961471';
+  let token = "ZxrhBZbiIxLmK-zUxlY-obBE0HACMIBg";
+  let urlOneAccount = "http://data.media.theplatform.com/media/data/Media/Field" + "?byFieldName=show" +
+    "&token=" + token + "&account=" + longAccountID +
+    "&schema=1.8.0&fields=id%2Ctitle%24allowedValues&form=json";
+
+  fetch(urlOneAccount)
+    .then((response) => response.json())
+    .then((data) => {
+      let thing = data.entries;
+      console.log(thing);
+      let thing2 = thing[0];
+      console.log(thing2);
+      let thing3 = thing2.id;
+      console.log(thing3);
+
+      if (typeof thing3 !== "string" || thing3 == "") {
+        console.error('wierd', thing3);
+        throw new Error("couldn't pull out custom field");
+      }
+      enterCustomFieldID(thing3);
+    })
+    .catch((error) => console.error(error));
+
+  let allAccountsWithTitle = "http://data.media.theplatform.com/media/data/Media/Field" + "?byFieldName=show" +
+    "&token=" + token +
+    "&schema=1.8.0&fields=id%2Ctitle%24allowedValues&form=json";
+
+}
 
 // logic to decide what to display based on what our worldstate is like
 if (isSignedIn() && isInAccount() && isInTask()) { // got all the stuff

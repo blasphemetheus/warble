@@ -14,6 +14,9 @@ function logSession() {
 }
 
 /////
+
+
+
 // stores the existing shows (given an array) in sessionStorage as a string
 function storeExistingShows(arrayShows) {
   sessionStorage.setItem("existing_shows", JSON.stringify(arrayShows));
@@ -33,6 +36,19 @@ function clearExistingShows() {
 }
 
 //////
+
+function enterCustomFieldID(id) {
+  sessionStorage.setItem("customfield_identifier", id);
+}
+
+function accessCustomFieldID() {
+  return sessionStorage.getItem('customfield_identifier');
+}
+
+function exitCustomFieldID() {
+  sessionStorage.removeItem("customfield_identifier");
+}
+
 
 // returns the thing stored at SignIn in sessionStorage, returns null if null
 function accessSignIn() {

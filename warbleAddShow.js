@@ -30,6 +30,39 @@
 //     .catch(error => console.error(error));
 // }
 
+//TODO If stuff changes in the future then these values
+const APPEND_TO_MAKE_FULL_ID = "http://data.media.theplatform.com/media/data/Media/Field/";
+
+const DEV_MAIN_ACCOUNT = "2686406403";
+const DEV_MAIN_ACCOUNT_CF_SHOWS = "214169463";
+
+const STAGE_MAIN_ACCOUNT = "2649273223";
+const STAGE_MAIN_ACCOUNT_CF_SHOWS = "155289480";
+
+const STAGE_AMC = '2649273223';
+const STAGE_AMC_CF_SHOWS = '155289480';
+
+const STAGE_WETV = '2676155873';
+const STAGE_WETV_CF_SHOWNAME = '183961471';
+
+const STAGE_IFC = '2665992905';
+const STAGE_IFC_CF_SHOWNAME = '179353621';
+
+const STAGE_BBCA = '2665992175';
+const STAGE_BBCA_CF_SHOWNAME = '182425513';
+
+const STAGE_SUNDANCE_TV = '2685731763';
+const STAGE_SUNDANCE_TV_CF_SHOWNAME = '299161469';
+
+const STAGE_GENERAL = '2494403701'; // HAS NO such field
+const STAGE_ADS_REPO = '2666065425'; // HAS NO such field
+const STAGE_REF_2POINT0 = '2702809055'; // HAS NO such field
+
+const STAGE_ASSET_REPO = '2703280093';
+const STAGE_ASSET_REPO_CF_SHOWS = '359577460';
+
+const PROD_MAIN_ACCOUNT = "2649321885";
+const PROD_MAIN_ACCOUNT_CF_SHOWS = "156313528";
 
 // returns as a string the custom field Shows number for the given account number. or "" with error thrown
 function getCustomFieldForAccount(account) {
@@ -42,11 +75,27 @@ function getCustomFieldForAccount(account) {
     case STAGE_MAIN_ACCOUNT:
       return STAGE_MAIN_ACCOUNT_CF_SHOWS;
       break;
-    case PROD_MAIN_ACCOUNT:
-      return PROD_MAIN_ACCOUNT_CF_SHOWS;
+    case STAGE_AMC:
+      return STAGE_AMC_CF_SHOWS;
       break;
     case STAGE_WETV:
       return STAGE_WETV_CF_SHOWNAME;
+      break;
+    case STAGE_IFC:
+      return STAGE_IFC_CF_SHOWNAME;
+      break;
+    case STAGE_BBCA:
+      return STAGE_BBCA_CF_SHOWNAME;
+      break;
+    case STAGE_SUNDANCE_TV:
+      return STAGE_SUNDANCE_TV_CF_SHOWNAME;
+      break;
+    case STAGE_ASSET_REPO:
+      return STAGE_ASSET_REPO_CF_SHOWS;
+      break;
+    case PROD_MAIN_ACCOUNT:
+      return PROD_MAIN_ACCOUNT_CF_SHOWS;
+      break;
     default:
       throw new Error('Unrecognized account, cannot add shows: ', account);
       return "";
