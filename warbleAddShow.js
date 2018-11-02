@@ -30,7 +30,11 @@
 //     .catch(error => console.error(error));
 // }
 
-//TODO If stuff changes in the future then these values
+
+// TODO: remove show
+// TODO display whether
+//TODO If stuff changes in the future then these values will change,
+//     should put in a json file or something? or at least obfuscate code
 const APPEND_TO_MAKE_FULL_ID = "http://data.media.theplatform.com/media/data/Media/Field/";
 
 const DEV_MAIN_ACCOUNT = "2686406403";
@@ -62,7 +66,7 @@ const STAGE_ASSET_REPO = '2703280093';
 const STAGE_ASSET_REPO_CF_SHOWS = '359577460';
 
 const PROD_MAIN_ACCOUNT = "2649321885";
-const PROD_MAIN_ACCOUNT_CF_SHOWS = "156313528";
+// const PROD_MAIN_ACCOUNT_CF_SHOWS = "156313528"; //TODO: TO ENABLE PROD uncomment this (for the main account only)
 
 // returns as a string the custom field Shows number for the given account number. or "" with error thrown
 function getCustomFieldForAccount(account) {

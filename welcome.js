@@ -3,6 +3,52 @@
 
 // [Hell, Is, Irony]
 
+displayLoginStatus();
+
+let currentStateOfCustomFieldIdentifier = false;
+
+// Promise
+let doIHaveAllTheInfoNeededForThisAccount = new Promise((resolve, reject) => {
+  if (currentStateOfCustomFieldIdentifier) {
+    let answer = {
+      currentAccount: 'dev',
+      adminPriveleges: 'true'
+    };
+    resolve(answer); // fulfilled
+  } else {
+    let reason = new Error('data means no');
+    reject(reason); // reject
+  }
+});
+
+let tryFetch = () => {
+  doIHaveAllTheInfoNeededForThisAccount
+    .then((fulfilled) => {
+      // yay got all the info
+      console.log(fulfilled);
+      // output: {currentAccount: 'dev', adminPriveleges: 'true'}
+    }, (error) => console.log(error.message));
+};
+
+tryFetch();
+
+
+
+//////////////////////// https://javascript.info/promise-basics
+
+
+
+let promise = new Promise(function(resolve, reject) {
+  // do thing, possibly async, then ...
+
+  if (true == true /*everything is fine */ ) {
+    resolve("stuff worked");
+  } else {
+    reject(Error("It broke"));
+  }
+});
+
+promise.then((result) => console.log(result), (err) => console.error(err));
 // NOTE: uncomment logSession to have the various things we deal with in sessionStorage logged to console
 // logSession();
 
@@ -16,7 +62,6 @@ if (!isSignedIn()) { // No, not signed in
   displayLinkToSignIn();
 
 } else if (!isInAccount()) { // Yes - signedIn, but NOT in an Account
-  displayLoginStatus();
   console.log('WELCOME - Logic Branch - Yes SignIn, No Account');
   // since we don't have an accounts storage item , lets list accounts
 
@@ -24,8 +69,12 @@ if (!isSignedIn()) { // No, not signed in
   selectAccounts();
 
 } else { // Yes - signin, Yes - Account, Yes - Task
-  console.log('WELCOME - Logic Branch - Yes SignIn, Yes Account, Yes Task');
+  console.log('WELCOME - Logic Branch - Yes SignIn, Yes Account');
 
+  storeCustomFieldIfExistsThenRedirect();
+}
+
+function moveToWarble() {
   window.location.href = 'warble.html';
 }
 // ... -------------------- ... //
@@ -34,6 +83,64 @@ if (!isSignedIn()) { // No, not signed in
 function reload() {
   window.location.href = 'welcome.html';
 }
+
+// stores a custom field for the selected account should one exist
+function storeCustomFieldIfExistsThenRedirect() { // TODO: FIX THIS
+  let thing = accessAccount();
+  console.log(thing);
+  thing = JSON.parse(thing);
+  let shortID = thing.currentAccountID;
+  console.log(shortID);
+
+  let th = accessSignIn();
+  console.log(th);
+  th = JSON.parse(th);
+  let token = th.token;
+  console.log(token);
+
+  let longAccountID = "http%3A%2F%2Faccess.auth.theplatform.com%2Fdata%2FAccount%2F" + shortID;
+
+  let urlOneAccount = "http://data.media.theplatform.com/media/data/Media/Field" + "?byFieldName=show" +
+    "&token=" + token + "&account=" + longAccountID +
+    "&schema=1.8.0&fields=id%2Ctitle%24allowedValues&form=json";
+  console.log(urlOneAccount);
+
+  fetch(urlOneAccount)
+    .then((response) => response.json(), (error) => console.error(error))
+    .then((data) => {
+      console.log('hello');
+      console.log(data);
+
+      if (data.entryCount == 0) {
+        let err = new Error('zero entries in response');
+        console.error(err, data);
+      }
+
+      let thing = data.entries;
+      console.log(thing);
+      let thing2 = thing[0];
+      console.log(thing2);
+      let thing3 = thing2.id;
+      console.log(thing3);
+
+      if (typeof thing3 !== "string" || thing3 == "") {
+        console.error('wierd', thing3);
+        throw new Error("couldn't pull out custom field");
+      }
+      // TODO FIX PROMISES
+      enterCustomFieldID(thing3);
+      return true;
+    }, (error) => console.error(error)).then((data) => moveToWarble());
+
+  let allAccountsWithTitle = "http://data.media.theplatform.com/media/data/Media/Field" + "?byFieldName=show" +
+    "&token=" + token +
+    "&schema=1.8.0&fields=id%2Ctitle%24allowedValues&form=json";
+} // TODO: FIX THIS
+
+
+
+
+
 
 // given a currentAccount (string)
 // the function that gets called when the user presses the button for choosing an account
@@ -150,7 +257,7 @@ function selectAccounts() {
     '?schema=2.0&form=json&token=' + platToken + '&_pattern';
 
   fetch(urlListAccounts)
-    .then((response) => response.json())
+    .then((response) => response.json(), (error) => console.error(error))
     // here we define the function that tells it what to do when the response is loaded
     .then((myJSON) => {
       /* FORM of response
@@ -230,7 +337,7 @@ function selectAccounts() {
         document.getElementById('selectAccountForm').appendChild(inp);
         document.getElementById('selectAccountForm').appendChild(document.createElement('br'));
       }); // end of foreach of arrayAccounts
-    }); // end of then fn (like onload)
+    }, (error) => console.error(error)); // end of then fn (like onload)
 } // end of selectAccounts() fn
 
 // appends to end of file, the Button directing you to login again

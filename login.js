@@ -4,7 +4,7 @@
 // displays a couple of links in the html (appends to end)
 function debugOptions() {
   let d = document.createElement('div');
-  d.innerHTML = '<hr><a href="index.html">index</a><hr><a href="welcome.html">GoRighttowelcomepage</a><hr><a href="greg.html">Greg\'s vision</a>   <hr>   <a href="warble.html">My demo</a>   <hr>   <a href="javascript:signOut();">Sign Out</a>   <hr>   <hr>   <a href="codemirror.html">CodeMirror</a>   <hr>   <a href="runLinker.html"> Run Linker Directly</a>   <hr>';
+  d.innerHTML = '<hr><a href="index.html">index</a><hr><a href="welcome.html">GoRighttowelcomepage</a><hr><a href="greg.html">Greg\'s vision</a>   <hr>   <a href="warble.html">My demo</a>   <hr>   <a href="javascript:signOut();">Sign Out</a>   <hr>  <hr>';
   document.body.appendChild(d);
 }
 
@@ -244,7 +244,19 @@ function selectTask() {
   btn.innerHTML = 'Start Adding Shows';
   btn.setAttribute('onclick', 'javascript: enterTask(\'{"currentTask" : "cf_addShow"}\'); window.location.href = "welcome.html"')
 
-  document.body.appendChild(header);
-  document.body.appendChild(para);
-  document.body.appendChild(btn)
+
+  let wrap = document.createElement('div');
+  wrap.setAttribute('id', 'initiate'); // ID IS INITIATE (lowercase)
+
+  wrap.appendChild(header);
+  wrap.appendChild(para);
+  wrap.appendChild(btn)
+
+  // if there's already an iniiate (ie continue to add show prompt), replace it
+  let existing = document.getElementById('initiate');
+  if (existing !== null) {
+    existing.remove();
+  }
+
+  document.body.appendChild(wrap);
 }

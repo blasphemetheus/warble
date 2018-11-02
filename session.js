@@ -39,10 +39,14 @@ function clearExistingShows() {
 
 function enterCustomFieldID(id) {
   sessionStorage.setItem("customfield_identifier", id);
+  return new Promise((resolve, reject) => resolve())
 }
 
+// exits customfield_identifier after the first access
 function accessCustomFieldID() {
-  return sessionStorage.getItem('customfield_identifier');
+  let temp = sessionStorage.getItem('customfield_identifier');
+  exitCustomFieldID();
+  return temp;
 }
 
 function exitCustomFieldID() {
@@ -295,6 +299,7 @@ function showClearOptions() {
 
 function displayLoginStatus() {
   let status = 'NOT SIGNED IN';
+  let acc = '';
 
   if (isSignedIn()) {
 
@@ -303,9 +308,39 @@ function displayLoginStatus() {
     obj = JSON.parse(obj);
     status = obj.userName;
   }
+
+  if (isInAccount()) {
+    acc = ',\n  Account: ';
+    let stringSaved = accessAccount();
+    let objectSaved = JSON.parse(stringSaved);
+    let currentAccountStringRep = objectSaved.currentAccountObj;
+    console.log(currentAccountStringRep);
+
+    let accountObj = JSON.stringify(currentAccountStringRep);
+    accountObj = JSON.parse(accountObj);
+    let label = accountObj.label;
+    acc += label;
+    console.log('LMS', acc);
+  }
+
   let p = document.createElement('p');
-  p.textContent = 'Sign-in status: ' + status;
+  p.textContent = 'Sign-in status: ' + status + acc;
 
   document.body.appendChild(p);
 
+
+
 }
+
+
+
+// sessionStorage.setItem('test', 'breh');
+//
+// // deal with sessionStorage (test)
+// if (sessionStorage.getItem('test') == null) { // no test in storage
+//   console.log('there is no sessionStorage with key: test');
+//   console.log('sessionStorage(test)', sessionStorage.getItem('test'));
+// } else { // there's test in storage
+//   console.log('sessionStorage with key : test : exists');
+//   console.log('sessionStorage(test):', sessionStorage.getItem('test'));
+// }
