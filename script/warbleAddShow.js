@@ -40,8 +40,6 @@ const APPEND_TO_MAKE_FULL_ID = "http://data.media.theplatform.com/media/data/Med
 const DEV_MAIN_ACCOUNT = "2686406403";
 const DEV_MAIN_ACCOUNT_CF_SHOWS = "214169463";
 
-const STAGE_MAIN_ACCOUNT = "2649273223";
-const STAGE_MAIN_ACCOUNT_CF_SHOWS = "155289480";
 
 const STAGE_AMC = '2649273223';
 const STAGE_AMC_CF_SHOWS = '155289480';
@@ -68,6 +66,52 @@ const STAGE_ASSET_REPO_CF_SHOWS = '359577460';
 const PROD_MAIN_ACCOUNT = "2649321885";
 // const PROD_MAIN_ACCOUNT_CF_SHOWS = "156313528"; //TODO: TO ENABLE PROD uncomment this (for the main account only)
 
+
+/* alternate ways of storing this
+var myMap = new Map([ // account_id, customfield_id (if null there isn't one)
+  [2686406403, 214169463], //DEV_MAIN_ACCOUNT
+  [2649273223, 155289480], //STAGE_AMC
+  [2676155873, 183961471], //STAGE_WETV
+  [2665992905, 179353621], //STAGE_IFC
+  [2665992175, 182425513], //STAGE_BBCA
+  [2685731763, 299161469], //STAGE_SUNDANCE_TV
+  [2703280093, 359577460], //STAGE_ASSET_REPO
+  [2494403701, null], //STAGE_GENERAL
+  [2666065425, null], //STAGE_ADS_REPO
+  [2702809055, null], // STAGE_REF_2POINT0
+  [2649321885, 156313528], //PROD_MAIN_ACCOUNT
+]);
+
+
+var myArray = {
+  allowedAccounts: [
+    '2686406403', //DEV_MAIN_ACCOUNT
+    '2649273223', //STAGE_AMC
+    '2676155873', //STAGE_WETV
+    '2665992905', //STAGE_IFC
+    '2665992175', //STAGE_BBCA
+    '2685731763', //STAGE_SUNDANCE_TV
+    '2703280093', //STAGE_ASSET_REPO
+    '2649321885' //PROD_MAIN_ACCOUNT
+  ],
+  existingAccountsNoCF: [
+    '2494403701', //STAGE_GENERAL
+    '2666065425', //STAGE_ADS_REPO
+    '2702809055' //STAGE_REF_2POINT0
+  ],
+  allowedCustomFields: [ // all these are CF of the account
+    '214169463', // DEV_MAIN_ACCOUNT
+    '155289480', //STAGE_AMC
+    '183961471', //STAGE_WETV
+    '179353621', //STAGE_IFC
+    '182425513', //STAGE_BBCA
+    '299161469', //STAGE_SUNDANCE_TV
+    '359577460', //STAGE_ASSET_REPO
+    '156313528' //PROD_MAIN_ACCOUNT
+  ]
+}
+*/
+
 // returns as a string the custom field Shows number for the given account number. or "" with error thrown
 function getCustomFieldForAccount(account) {
   // this bit is us telling it which customField number to use in the link
@@ -75,9 +119,6 @@ function getCustomFieldForAccount(account) {
   switch (account) {
     case DEV_MAIN_ACCOUNT:
       return DEV_MAIN_ACCOUNT_CF_SHOWS;
-      break;
-    case STAGE_MAIN_ACCOUNT:
-      return STAGE_MAIN_ACCOUNT_CF_SHOWS;
       break;
     case STAGE_AMC:
       return STAGE_AMC_CF_SHOWS;

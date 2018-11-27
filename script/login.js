@@ -8,6 +8,18 @@ function debugOptions() {
   document.body.appendChild(d);
 }
 
+// clears the html of failure signals (ie red styling, 'your login failed' msgs, etc),
+// if there aren't any then nothing changes
+function clearFailures() {
+
+  // do stuff because login failed earlier, but we're clearing it now
+  lastAttempt.textContent = '';
+  lastAttempt.style.backgroundColor = 'white';
+  errorCase.textContent = '';
+  document.getElementById("loginResponse").innerHTML = '<span style="color:green">Your login succeeded</span>';
+
+}
+
 
 // if you're already signed in you can't sign in again until you log out silly
 if (isSignedIn()) {
@@ -153,6 +165,8 @@ function receiveLoginResponse(data) {
 
   // if this test passes then there is a signIn response (ie we got a token)
   if (typeof data.signInResponse != "undefined") {
+
+    clearFailures();
     // login succeeded
     console.log('SUCCESSFUL LOGIN - there is a signInResponse object');
     console.log('signInResponse Object is: ', data.signInResponse);
