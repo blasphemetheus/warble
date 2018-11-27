@@ -326,10 +326,8 @@ function displayLoginStatus() {
   let p = document.createElement('p');
   p.textContent = 'Sign-in status: ' + status + acc;
 
-  document.body.appendChild(p);
-
-
-
+  let headerArea = document.getElementById('header');
+  headerArea.appendChild(p);
 }
 
 

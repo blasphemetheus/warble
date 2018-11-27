@@ -33,13 +33,12 @@
 
 // TODO: remove show
 // TODO display whether
-//TODO If stuff changes in the future then these values will change,
+// TODO If stuff changes in the future then these values will change,
 //     should put in a json file or something? or at least obfuscate code
 const APPEND_TO_MAKE_FULL_ID = "http://data.media.theplatform.com/media/data/Media/Field/";
 
 const DEV_MAIN_ACCOUNT = "2686406403";
 const DEV_MAIN_ACCOUNT_CF_SHOWS = "214169463";
-
 
 const STAGE_AMC = '2649273223';
 const STAGE_AMC_CF_SHOWS = '155289480';
@@ -310,20 +309,12 @@ function doAddShow(showToAdd) {
 //   */
 //
 
-// the function that gets called when you press the add button when adding a new show
+// displays a prompt with the show you selected as the default value, and calls doAddShow with the value of the prompt when submitted
+// this function is a called when you are adding a show and the user presses 'Add'
 function submitAddShow() {
   let showToAdd = document.getElementById('addShowInput').value;
-  document.getElementById('alert').textContent = 'The input is: "' + showToAdd + '"';
-
-  let confirmButton = document.createElement('button');
-  confirmButton.setAttribute('onclick', 'doAddShow("' + showToAdd + '")');
-  confirmButton.setAttribute('id', 'confirmButton');
-  confirmButton.innerHTML = 'Confirm'
-
-  // if there is a confirmButton then remove it (after if we add a confirm button)
-  if (document.getElementById('confirmButton') != null) {
-    console.log('reached not null');
-    removeByID('confirmButton');
+  let promptResponse = prompt("~Be positive before pressing OK~", showToAdd);
+  if (promptResponse != null) {
+    doAddShow(showToAdd);
   }
-  document.getElementById('addShowForm').appendChild(confirmButton);
 }

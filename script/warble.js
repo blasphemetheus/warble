@@ -1,26 +1,19 @@
 //This document details what's gonna happen on the warble.html page due to Javascript
 
-
+// display the login status in the header
 displayLoginStatus();
 
 // logic to decide what to display based on what our worldstate is like
-if (isSignedIn() && isInAccount() && isInTask()) { // got all the stuff
-  let tsk = accessTask();
-  tsk = JSON.parse(tsk);
-
-  switch (tsk.currentTask) {
-    case "cf_addShow":
-      init_AddShow()
-      break;
-    default:
-      break;
-  }
-} else {
+if (isSignedIn() && isInAccount()) { // if we got all the info we need ...
+  // populate the html doc for adding/removing shows
+  init_AddShow()
+} else { // if we didn't get all the info we need ...
+  // send em back to welcome.html
   console.log("you don't have all the info you need, sending you back to welcome.html");
   window.location.href = "welcome.html";
 }
 
-// returns the url to get the existing shows given a token and a customfield_identifier
+// returns the URL to get the existing shows given a token and a customfield_identifier
 function urlToGetShows(token, cf_identifier) {
   const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
@@ -28,7 +21,7 @@ function urlToGetShows(token, cf_identifier) {
 }
 
 // return true if admin - false if otherwise
-async function checkIfAdmin() {
+function checkIfAdmin() {
   if (!(isSignedIn() && isInAccount())) {
     throw new Error('not in account or not signed in');
   }
@@ -41,25 +34,15 @@ async function checkIfAdmin() {
   signin = JSON.parse(signin);
   let token = signin.token;
 
-
   // let promise = doSomethingAsync();
   // return promise.then(() => {
   //   somethingComplicated();
   // })
   // bad above
 
-
-  fetch(url).then(response => {
-    if (response.ok) {
-      return response
-    }
-  });
-
-
+  // define promise ...
   let promiseCheckAdmin = new Promise(function(resolve, reject) { // immediately starts running this fn
-    // do a thing, could be async , then ...
-
-    var admin = false;
+    var admin = null;
     let urlToCheckAdmin = "http://access.auth.theplatform.com/web/Authorization/authorize" +
       "?account=" + longAccountID + "&form=json" + "&token=" + token + "&schema=1.3" +
       "&_operations%5B0%5D.service=Console%20Data%20Service&_operations%5B0%5D.method=POST&_operations%5B0%5D.endpoint=MenuItem";
@@ -67,62 +50,57 @@ async function checkIfAdmin() {
     fetch(urlToCheckAdmin)
       .then((response) => response.json())
       .then((data) => {
-        console.log(JSON.stringify(data));
-        let authResp = data.authorizeResponse;
-        console.log(authResp);
-        let accounts = authResp.accounts;
-        console.log(accounts);
+        console.log('response obj', data);
 
-        switch (accounts.length) {
-          case 0:
-            throw new Error('accounts in response does not have any elements, not an admin');
-            break;
-          case 1:
-            break;
-          default:
-            throw new Error('there are more than one accounts in response');
-            break;
-        } // if it made it past switch without erroring out, then there is something to compare
-
-        let accountChecked = accounts[0];
-        console.log('accountChecked', accountChecked);
-        let newID = accountChecked.id;
-        console.log('these equal?', newID);
-        console.log('second', longAccountID);
-
-        if (newID = longAccountID) {
-          console.log('should return true');
-          return data;
-          resolve('Successful request and is admin');
-        } else {
-          reject('successful request and strings don\'t match?');
+        if (data.responseCode == 403) {
+          console.log('Checked if user is admin of current account and they are not');
+          reject(data.description + 'THE USER ISN\'T AN ADMIN ON THIS ACCOUNT BRUV');
         }
-        console.log(admin);
-        reject(Error('something wrong'));
-      }).catch((error) => console.error(error)); // end of thens for the actual fetch
 
-
-    return promiseCheckAdmin.then(() => {
-      somethingComplicated();
-    });
+        if (data.authorizeResponse != null) {
+          console.log('Checked if user is admin of current account and they are indeed');
+          console.log('Here is response to request to check Admin', data.authorizeResponse);
+          resolve(data.authorizeResponse);
+        }
+        // let authResp = data.authorizeResponse;
+        // console.log(authResp);
+        // let accounts = authResp.accounts;
+        // console.log(accounts);
+        //
+        // switch (accounts.length) {
+        //   case 0:
+        //     throw new Error('accounts in response does not have any elements, not an admin');
+        //     break;
+        //   case 1:
+        //     break;
+        //   default:
+        //     throw new Error('there are more than one accounts in response');
+        //     break;
+        // } // if it made it past switch without erroring out, then there is something to compare
+        //
+        // let accountChecked = accounts[0];
+        // console.log('accountChecked', accountChecked);
+        // let newID = accountChecked.id;
+        // console.log('these equal?', newID);
+        // console.log('second', longAccountID);
+        //
+        // if (newID = longAccountID) {
+        //   console.log('should return true');
+        //   return data;
+        //   resolve('Successful request and is admin');
+        // } else {
+        //   reject('successful request and strings don\'t match?');
+        // }
+        // console.log(admin);
+        // reject(Error('something wrong'));
+      }).catch((error) => {
+        console.error('Error? ', error); // end of thens for the actual fetch
+        reject(false);
+      }); // end of catch
   }); // end of promise stuff
 
-
-  // success callback for checkingAdmin
-  function successCallback(result) {
-    console.log(result);
-    return true;
-  }
-
-  // failure callback fn for checkingAdmin
-  function failureCallback(err) {
-    console.error(err);
-    return false;
-  }
-
-  promiseCheckAdmin.then(successCallback).catch(failureCallback);
+  return promiseCheckAdmin;
 }
-
 
 // A function that displays the stuff necessary to start adding one show (exactly as input) to the allowedValues array within the customField Show
 function init_AddShow() {
@@ -211,6 +189,7 @@ function init_AddShow() {
   div.appendChild(lab);
   div.appendChild(inp);
   div.appendChild(submit);
+  div.appendChild(document.createElement('br'));
 
   document.body.appendChild(alert);
   document.body.appendChild(div);
