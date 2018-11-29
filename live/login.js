@@ -33,9 +33,7 @@ function clearFailures() {
   lastAttempt.style.backgroundColor = 'white';
   errorCase.textContent = '';
   document.getElementById("loginResponse").innerHTML = '<span style="color:green">Your login succeeded</span>';
-
 }
-
 
 // if you're already signed in you can't sign in again until you log out silly
 if (isSignedIn()) {
