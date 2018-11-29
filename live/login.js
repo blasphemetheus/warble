@@ -1,13 +1,3 @@
-//NOTE: run the debugOptions() function to display a menu with link options
-//debugOptions();
-
-// displays a couple of links in the html (appends to end)
-function debugOptions() {
-  let d = document.createElement('div');
-  d.innerHTML = '<hr><a href="index.html">index</a><hr><a href="welcome.html">GoRighttowelcomepage</a><hr><a href="greg.html">Greg\'s vision</a>   <hr>   <a href="warble.html">My demo</a>   <hr>   <a href="javascript:signOut();">Sign Out</a>   <hr>  <hr>';
-  document.body.appendChild(d);
-}
-
 // takes loginForm out of html
 function deleteLoginForm() {
   let toDelete = document.getElementById('loginForm');
@@ -256,11 +246,4 @@ function checkLogin() {
 if (!isSignedIn()) {
   // This makes the login button function (else it will do nothing)
   loginAttempt.addEventListener('click', checkLogin);
-}
-
-// javascript yo
-function createParagraph() {
-  var paragra = document.createElement('p');
-  paragra.textContent = 'boom';
-  document.body.appendChild(paragra);
 }
