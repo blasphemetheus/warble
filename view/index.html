@@ -1,40 +1,15 @@
 <!DOCTYPE html>
 <html>
 
-
 <head>
   <script src="session.js"></script>
 
   <script>
-    checkSeshStorage();
-
-    // checks session storage
-    function checkSeshStorage() {
-      // if the session storage item at SignIn is null
-      if (sessionStorage.getItem('SignIn') == null) {
-        console.log("No SignIn in sessionStorage - Redirecting you to login.html");
-        window.location.href = "login.html";
-      } else {
-        console.log('Found SignIn in sessionStorage - Redirecting you to welcome.html');
-        window.location.href = "welcome.html";
-      }
+    if (isSignedIn()) {
+      window.location.href = "login.html";
+    } else {
+      window.location.href = "welcome.html";
     }
-
-    // checkCookie();
-    //
-    // function checkCookie() {
-    //   var signInCookie = getCookie('SignIn');
-    //   // if the cookie var we just made isn't an empty string
-    //   if (signInCookie != "") {
-    //     console.log("sending you to welcome cause you had a non-empty signIn cookie");
-    //     // do thing that shows you've been there before, in this case, redirect to welcome
-    //     window.location.href = "welcome.html";
-    //   } else {
-    //     console.log("sending you to login cause you had an empty signIn cookie or had no such cookie");
-    //     window.location.href = "login.html";
-    //   } // ends else dealing with signInCookie (when it's "")
-    //
-    // } // ends checkCookie fn
 
   </script>
 </head>
@@ -43,18 +18,5 @@
   Hello this is index
   <div id='content'></div>
 </body>
-
-
-<!-- TODO IMPLEMENT JSON WebTokens (jwtoken), associated with Auth0
-
-- Getting the JWT (token) -
-Browser -> POST to /users/login with (username and password) -> server
-server -> creates a jwt with a secret -> returns the jwt to the browser in some sort of response -> browser
-
-- Doing a token-authenticated thing -
-browser -> sends jwt on authorization Header -> server
-server -> checks jwt signature. Gets user information from the jwt -> sends response to the client -> browser
-
-!-->
 
 </html>

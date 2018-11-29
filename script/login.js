@@ -150,8 +150,8 @@ function requestToken(username, password, encodedString) {
     // then ... it does stuff, in this case, puts the response in json
     .then(response => response.json())
     // then ... pass in to recieveLoginResponse
-    .then(data => receiveLoginResponse(data))
-    .catch(error => console.error(error));
+    .then(data => receiveLoginResponse(data));
+  // .catch(error => console.error(error));
 
   // must stringify the response or it'll look like [object Object] in html
   // document.getElementById('loginResponse').innerHTML = JSON.stringify(response);
