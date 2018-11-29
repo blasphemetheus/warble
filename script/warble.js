@@ -1,7 +1,7 @@
 //This document details what's gonna happen on the warble.html page due to Javascript
 
 // display the login status in the header
-displayLoginStatus();
+displayStatusInHTML();
 
 // logic to decide what to display based on what our worldstate is like
 if (isSignedIn() && isInAccount()) { // if we got all the info we need ...
@@ -18,88 +18,6 @@ function urlToGetShows(token, cf_identifier) {
   const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
   return getAllowedValuesForShowsURL;
-}
-
-// return true if admin - false if otherwise
-function checkIfAdmin() {
-  if (!(isSignedIn() && isInAccount())) {
-    throw new Error('not in account or not signed in');
-  }
-  // pull out the token and longAccountID
-  let accountObj = accessAccount();
-  accountObj = JSON.parse(accountObj);
-  let acc = accountObj.currentAccountObj;
-  let longAccountID = acc.id;
-  let signin = accessSignIn();
-  signin = JSON.parse(signin);
-  let token = signin.token;
-
-  // let promise = doSomethingAsync();
-  // return promise.then(() => {
-  //   somethingComplicated();
-  // })
-  // bad above
-
-  // define promise ...
-  let promiseCheckAdmin = new Promise(function(resolve, reject) { // immediately starts running this fn
-    var admin = null;
-    let urlToCheckAdmin = "http://access.auth.theplatform.com/web/Authorization/authorize" +
-      "?account=" + longAccountID + "&form=json" + "&token=" + token + "&schema=1.3" +
-      "&_operations%5B0%5D.service=Console%20Data%20Service&_operations%5B0%5D.method=POST&_operations%5B0%5D.endpoint=MenuItem";
-
-    fetch(urlToCheckAdmin)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('response obj', data);
-
-        if (data.responseCode == 403) {
-          console.log('Checked if user is admin of current account and they are not');
-          reject(data.description + 'THE USER ISN\'T AN ADMIN ON THIS ACCOUNT BRUV');
-        }
-
-        if (data.authorizeResponse != null) {
-          console.log('Checked if user is admin of current account and they are indeed');
-          console.log('Here is response to request to check Admin', data.authorizeResponse);
-          resolve(data.authorizeResponse);
-        }
-        // let authResp = data.authorizeResponse;
-        // console.log(authResp);
-        // let accounts = authResp.accounts;
-        // console.log(accounts);
-        //
-        // switch (accounts.length) {
-        //   case 0:
-        //     throw new Error('accounts in response does not have any elements, not an admin');
-        //     break;
-        //   case 1:
-        //     break;
-        //   default:
-        //     throw new Error('there are more than one accounts in response');
-        //     break;
-        // } // if it made it past switch without erroring out, then there is something to compare
-        //
-        // let accountChecked = accounts[0];
-        // console.log('accountChecked', accountChecked);
-        // let newID = accountChecked.id;
-        // console.log('these equal?', newID);
-        // console.log('second', longAccountID);
-        //
-        // if (newID = longAccountID) {
-        //   console.log('should return true');
-        //   return data;
-        //   resolve('Successful request and is admin');
-        // } else {
-        //   reject('successful request and strings don\'t match?');
-        // }
-        // console.log(admin);
-        // reject(Error('something wrong'));
-      }).catch((error) => {
-        console.error('Error? ', error); // end of thens for the actual fetch
-        reject(false);
-      }); // end of catch
-  }); // end of promise stuff
-
-  return promiseCheckAdmin;
 }
 
 // A function that displays the stuff necessary to start adding one show (exactly as input) to the allowedValues array within the customField Show
@@ -133,7 +51,8 @@ function init_AddShow() {
 
 
     // retrieve the account number
-    let customFieldNumber = getCustomFieldForAccount(account);
+
+    const customFieldNumber = getCustomFieldForAccount(account);
     const existingShowsURL = urlToGetShows(token, customFieldNumber);
 
     // GETS EXISTING SHOWS AND LISTS THEM

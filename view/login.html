@@ -12,18 +12,18 @@
 <body>
   <header class='header' id='header'>
     <h1>Login (to Warble)</h1>
-    <a href='javascript: signOut(); window.location.href = "login.html"' class='signOut'>Sign Out</a>
+    <!-- <a href='javascript: signOut(); window.location.href = "login.html"' class='signOut' id='signOut'>Sign Out</a> -->
   </header>
+
   <buffer>
     <hr>
     <hr>
     <hr> </buffer>
-  <p>Please Login to use Warble</p>
-
   <p id="responseID"></p>
   <p id="loginResponse"></p>
 
-  <div class="form">
+  <div class="form" id="loginForm">
+    <p>Please Login to use Warble</p>
     <label for="usernameField">Enter a username: </label>
     <input type="text" id="usernameField" class="usernameField">
 

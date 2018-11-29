@@ -2,13 +2,12 @@
 function logSession() {
   let act = accessAccount();
   let signIn = accessSignIn();
-  let task = accessTask();
   let posAc = getPossibleAccounts();
 
+  // in chrome, it appears to not log the stuff with undefined or no objects attached?
   console.log('---Commence Log of relevant storage---');
   console.log('SignIn Storage: ', signIn);
   console.log('Account Storage: ', act);
-  console.log('Task Storage: ', task);
   console.log('Possible Accounts: ', posAc);
   console.log('---End Log of relevant storage---');
 }
@@ -38,7 +37,7 @@ function clearExistingShows() {
 //////
 
 function enterCustomFieldID(id) {
-  sessionStorage.setItem("customfield_identifier", id);
+  sessionStorage.setItem("customfield_identifier", JSON.stringify(id));
   return new Promise((resolve, reject) => resolve())
 }
 
@@ -46,7 +45,7 @@ function enterCustomFieldID(id) {
 function accessCustomFieldID() {
   let temp = sessionStorage.getItem('customfield_identifier');
   exitCustomFieldID();
-  return temp;
+  return JSON.parse(temp);
 }
 
 function exitCustomFieldID() {
@@ -56,7 +55,8 @@ function exitCustomFieldID() {
 
 // returns the thing stored at SignIn in sessionStorage, returns null if null
 function accessSignIn() {
-  return sessionStorage.getItem("SignIn");
+  rawString = sessionStorage.getItem("SignIn");
+  return JSON.parse(rawString);
 }
 
 // returns whether you are signed in (whether sessionStorage has the key value pair for SignIn or not),
@@ -73,7 +73,7 @@ function isSignedIn() {
 // it makes a session cookie to represent sign in
 function signIn(message) {
   console.log("Signing In - Message being stored in sessionStorage at SignIn: ", message);
-  sessionStorage.setItem("SignIn", message);
+  sessionStorage.setItem("SignIn", JSON.stringify(message));
 }
 
 // deletes the signIn cookie and refreshes the page
@@ -92,7 +92,7 @@ function addPossibleAccounts(added) {
 }
 
 function getPossibleAccounts() {
-  return sessionStorage.getItem('PossibleAccounts');
+  return JSON.parse(sessionStorage.getItem('PossibleAccounts'));
 }
 
 function clearPossibleAccounts() {
@@ -106,7 +106,7 @@ function clearPossibleAccounts() {
 
 // returns the thing stored at Account in sessionStorage, returns null if null
 function accessAccount() {
-  return sessionStorage.getItem("Account");
+  return JSON.parse(sessionStorage.getItem("Account"));
 }
 
 function accessCurrentAccount() {
@@ -134,7 +134,7 @@ function isInAccount() {
 // stores what is passed in, in session storage under Account key
 function enterAccount(acct) {
   console.log("Entering Account - Message being stored in sessionStorage at Account: ", acct);
-  sessionStorage.setItem("Account", acct);
+  sessionStorage.setItem("Account", JSON.stringify(acct));
 }
 
 // clears memory of account in session storage, reloads page
@@ -148,7 +148,7 @@ function exitAccount() {
 
 // accesses what is stored at Task in sessionStorage
 function accessTask() {
-  return sessionStorage.getItem("Task");
+  return JSON.parse(sessionStorage.getItem("Task"));
 }
 
 // returns whether you are in a task or not, false if sessionStorage for Task is null, true if not
@@ -163,7 +163,7 @@ function isInTask() {
 // stores what is passed in, in session storage under Task key
 function enterTask(mem) {
   console.log("Entering Task - Mem being stored at 'Task': ", mem);
-  sessionStorage.setItem("Task", mem);
+  sessionStorage.setItem("Task", JSON.stringify(mem));
 }
 
 //clears memory of task in session storage, reloads page
@@ -260,34 +260,34 @@ function setCookie(cname, cvalue, exdays) {
   document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
 
-// w3schools - gets a cookie
-function getCookie(cname) {
-  var name = cname + "=";
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
-
-// w3schools - check a cookie
-function checkCookie() {
-  var user = getCookie("username");
-  if (user != "") {
-    alert("Welcome again " + user);
-  } else {
-    user = prompt("Please enter your name:", "");
-    if (user != "" && user != null) {
-      setCookie("username", user, 365);
-    }
-  }
-}
+// // w3schools - gets a cookie
+// function getCookie(cname) {
+//   var name = cname + "=";
+//   var ca = document.cookie.split(';');
+//   for (var i = 0; i < ca.length; i++) {
+//     var c = ca[i];
+//     while (c.charAt(0) == ' ') {
+//       c = c.substring(1);
+//     }
+//     if (c.indexOf(name) == 0) {
+//       return c.substring(name.length, c.length);
+//     }
+//   }
+//   return "";
+// }
+//
+// // w3schools - check a cookie
+// function checkCookie() {
+//   var user = getCookie("username");
+//   if (user != "") {
+//     alert("Welcome again " + user);
+//   } else {
+//     user = prompt("Please enter your name:", "");
+//     if (user != "" && user != null) {
+//       setCookie("username", user, 365);
+//     }
+//   }
+// }
 
 
 function showClearOptions() {
@@ -297,48 +297,30 @@ function showClearOptions() {
   document.body.appendChild(o);
 }
 
-function displayLoginStatus() {
+// displays in html (in header tag of body) your current sign-in status
+function displayStatusInHTML() {
   let status = 'NOT SIGNED IN';
   let acc = '';
-
+  // if signed in, change status to the username you're signed in with
   if (isSignedIn()) {
-
-
-    let obj = accessSignIn();
-    obj = JSON.parse(obj);
+    let obj = JSON.parse(accessSignIn());
     status = obj.userName;
   }
-
+  // if in account, change acc to the label of the account you're in
   if (isInAccount()) {
     acc = ',\n  Account: ';
-    let stringSaved = accessAccount();
-    let objectSaved = JSON.parse(stringSaved);
-    let currentAccountStringRep = objectSaved.currentAccountObj;
-    console.log(currentAccountStringRep);
-
-    let accountObj = JSON.stringify(currentAccountStringRep);
-    accountObj = JSON.parse(accountObj);
-    let label = accountObj.label;
+    let objectSaved = JSON.parse(accessAccount());
+    console.log('AccountObj saved, retrieving to display loginstatus', objectSaved);
+    let currentAccountObj = objectSaved.currentAccountObj;
+    console.log('currentAccountStringrREp, retrieving to display loginstatus', currentAccountObj);
+    let label = currentAccountObj.label;
     acc += label;
-    console.log('LMS', acc);
+    console.log('acc, retrieving to display loginstatus', acc);
   }
-
+  // create the p tag with the relevant info pasted in
   let p = document.createElement('p');
-  p.textContent = 'Sign-in status: ' + status + acc;
-
+  p.textContent = 'Username: ' + status + acc;
+  // insert that tag into document at header id
   let headerArea = document.getElementById('header');
   headerArea.appendChild(p);
 }
-
-
-
-// sessionStorage.setItem('test', 'breh');
-//
-// // deal with sessionStorage (test)
-// if (sessionStorage.getItem('test') == null) { // no test in storage
-//   console.log('there is no sessionStorage with key: test');
-//   console.log('sessionStorage(test)', sessionStorage.getItem('test'));
-// } else { // there's test in storage
-//   console.log('sessionStorage with key : test : exists');
-//   console.log('sessionStorage(test):', sessionStorage.getItem('test'));
-// }

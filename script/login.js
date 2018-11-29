@@ -8,6 +8,32 @@ function debugOptions() {
   document.body.appendChild(d);
 }
 
+// takes loginForm out of html
+function deleteLoginForm() {
+  let toDelete = document.getElementById('loginForm');
+  let parent = toDelete.parentNode;
+  parent.removeChild(toDelete);
+}
+
+// takes sign out link out of html in header
+function deleteSignOutLink() {
+  let toDelete = document.getElementById('signOut');
+  let parent = toDelete.parentNode;
+  parent.removeChild(toDelete);
+}
+
+// displays sign out link in header (adds it to html)
+function displaySignOutLink() {
+  let signoutlink = document.createElement('a');
+  signoutlink.setAttribute('href', 'javascript: signOut(); window.location.href = "login.html"');
+  signoutlink.setAttribute('class', 'signOut');
+  signoutlink.setAttribute('id', 'signOut');
+  signoutlink.textContent = 'Sign Out';
+
+  let header = document.getElementById('header');
+  header.appendChild(signoutlink);
+}
+
 // clears the html of failure signals (ie red styling, 'your login failed' msgs, etc),
 // if there aren't any then nothing changes
 function clearFailures() {
@@ -23,8 +49,11 @@ function clearFailures() {
 
 // if you're already signed in you can't sign in again until you log out silly
 if (isSignedIn()) {
-  displayLoginStatus();
-  selectTask();
+  displayStatusInHTML();
+  displaySignOutLink();
+  deleteLoginForm();
+  enterTask('{"currentTask" : "cf_addShow"}');
+  window.location.href = "welcome.html";
 } else {
   // if you aren't signed in, clears all the rest of the sessionStorage stuff
   sessionStorage.clear();
@@ -103,28 +132,24 @@ function updateHTMLFailure(response) {
   // do stuff because login failed
   lastAttempt.textContent = 'Wrong!';
   lastAttempt.style.backgroundColor = 'red';
-  errorCase.textContent = 'no info on error, the request no work';
+  errorCase.textContent = response.description;
   document.getElementById("loginResponse").innerHTML = '<span style="color:red">Your login failed, try again </span>';
 }
 
-//sends an http request to get a new token, given the username and password. Returns false if unsuccessful for any reason.
-// if successful, returns the token
+//sends a fetch request to get a new token, given the username and password
 function requestToken(username, password, encodedString) {
-  var responseText = document.getElementById('responseID');
-  // TODO better checking/reporting on whether the username or password are not empty
-  if (username === '' || password === '') {
-    responseText.innerHTML = 'you didn\'t enter in anything for your username and password, try again';
-  }
 
   const url = 'https://identity.auth.theplatform.com/idm/web/Authentication/signIn?schema=1.0&form=json&_idleTimeout=120960000';
 
-  // fetch is better than XMLHttpRequest by miles
+  // fetch sends a request to the url, you can specify what type and stuff in the 2nd param
   fetch(url, {
       headers: {
         "Authorization": "Basic " + encodedString,
       },
     })
+    // then ... it does stuff, in this case, puts the response in json
     .then(response => response.json())
+    // then ... pass in to recieveLoginResponse
     .then(data => receiveLoginResponse(data))
     .catch(error => console.error(error));
 
@@ -166,7 +191,12 @@ function receiveLoginResponse(data) {
   // if this test passes then there is a signIn response (ie we got a token)
   if (typeof data.signInResponse != "undefined") {
 
+    // clean up the html so the user knows they logged in
+    // Success! HTML Changes -- on successful login
     clearFailures();
+    deleteLoginForm();
+    displaySignOutLink();
+
     // login succeeded
     console.log('SUCCESSFUL LOGIN - there is a signInResponse object');
     console.log('signInResponse Object is: ', data.signInResponse);
@@ -177,10 +207,9 @@ function receiveLoginResponse(data) {
     // Make a cookie using our preloaded javascript file session.js which has the signIn function
     // json.stringify so we pass it a string
     signIn(JSON.stringify(data.signInResponse));
-
-
-    selectTask();
-    displayLoginStatus();
+    displayStatusInHTML();
+    enterTask('{"currentTask" : "cf_addShow"}');
+    window.location.href = "welcome.html";
   } else {
     updateHTMLFailure(data);
   }
@@ -223,54 +252,15 @@ function checkLogin() {
   usernameField.focus();
 }
 
-loginAttempt.addEventListener('click', checkLogin);
+// check if they're signed in, if they are, the button won't be there to add an event listener to
+if (!isSignedIn()) {
+  // This makes the login button function (else it will do nothing)
+  loginAttempt.addEventListener('click', checkLogin);
+}
 
 // javascript yo
 function createParagraph() {
   var paragra = document.createElement('p');
   paragra.textContent = 'boom';
   document.body.appendChild(paragra);
-}
-
-
-
-// -------- //
-
-// displays a button with add show (with label - adds an allowedValue to a 'Shows' (or similar-named) custom field)
-function selectTask() {
-  // lets parse the signIn Object we have in sessionStorage
-  let signInObj = JSON.parse(accessSignIn());
-  // rn we only need the token part of the stached object, so lets pull that out
-  let platToken = signInObj.token;
-  //throw error if no token
-  if (platToken == null) {
-    console.error('Token is null and shouldn\'t be, check that logging in is working properly');
-  }
-
-  // header (informational, what step?)
-  let header = document.createElement('h3');
-  header.innerHTML = "Let's add a show";
-
-  let para = document.createElement('p');
-  para.innerHTML = "ie. select an account to modify and add an allowedValue to the 'Shows' custom-field";
-
-  let btn = document.createElement('button');
-  btn.innerHTML = 'Start Adding Shows';
-  btn.setAttribute('onclick', 'javascript: enterTask(\'{"currentTask" : "cf_addShow"}\'); window.location.href = "welcome.html"')
-
-
-  let wrap = document.createElement('div');
-  wrap.setAttribute('id', 'initiate'); // ID IS INITIATE (lowercase)
-
-  wrap.appendChild(header);
-  wrap.appendChild(para);
-  wrap.appendChild(btn)
-
-  // if there's already an iniiate (ie continue to add show prompt), replace it
-  let existing = document.getElementById('initiate');
-  if (existing !== null) {
-    existing.remove();
-  }
-
-  document.body.appendChild(wrap);
 }
