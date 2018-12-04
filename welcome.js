@@ -1,7 +1,7 @@
-// runs through all the javascript functionality of the welcome page.
-// [Hell, Is, Irony]
+https: // runs through all the javascript functionality of the welcome page.
+  // [Hell, Is, Irony]
 
-displayStatusInHTML();
+  displayStatusInHTML();
 
 // NOTE: run logSession to have the various things we deal with in sessionStorage logged to console
 logSession();
@@ -50,7 +50,7 @@ function storeCustomFieldIfExistsThenRedirect() { // TODO: FIX THIS
 
   let longAccountID = "http%3A%2F%2Faccess.auth.theplatform.com%2Fdata%2FAccount%2F" + shortID;
 
-  let urlOneAccount = "http://data.media.theplatform.com/media/data/Media/Field" + "?byFieldName=show" +
+  let urlOneAccount = "https://data.media.theplatform.com/media/data/Media/Field" + "?byFieldName=show" +
     "&token=" + token + "&account=" + longAccountID +
     "&schema=1.8.0&fields=id%2Ctitle%24allowedValues&form=json";
 
@@ -83,7 +83,7 @@ function storeCustomFieldIfExistsThenRedirect() { // TODO: FIX THIS
     .then((data) => moveToWarble())
     .catch((error) => console.log(error));
 
-  let allAccountsWithTitle = "http://data.media.theplatform.com/media/data/Media/Field" + "?byFieldName=show" +
+  let allAccountsWithTitle = "https://data.media.theplatform.com/media/data/Media/Field" + "?byFieldName=show" +
     "&token=" + token +
     "&schema=1.8.0&fields=id%2Ctitle%24allowedValues&form=json";
 } // TODO: FIX THIS
@@ -200,7 +200,7 @@ function happensBeforeRedirect() { // == checkPickAccount(this.submited)
   // let token = signin.token;
 
   // var admin = null;
-  // let urlToCheckAdmin = "http://access.auth.theplatform.com/web/Authorization/authorize" +
+  // let urlToCheckAdmin = "https://access.auth.theplatform.com/web/Authorization/authorize" +
   //   "?account=" + longAccountID + "&form=json" + "&token=" + token + "&schema=1.3" +
   //   "&_operations%5B0%5D.service=Console%20Data%20Service&_operations%5B0%5D.method=POST&_operations%5B0%5D.endpoint=MenuItem";
   // console.log(urlToCheckAdmin);

@@ -4,7 +4,7 @@
 
 
 
-// const APPEND_TO_MAKE_FULL_ID = "http://data.media.theplatform.com/media/data/Media/Field/";
+// const APPEND_TO_MAKE_FULL_ID = "https://data.media.theplatform.com/media/data/Media/Field/";
 //
 // const DEV_MAIN_ACCOUNT = "2686406403";
 // const DEV_MAIN_ACCOUNT_CF_SHOWS = "214169463";
@@ -60,7 +60,7 @@ function urlToAddShow(token) {
 
 // returns the url to get the existing shows given a token and a customfield_identifier
 function urlToGetShows(token, cf_identifier) {
-  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
+  const getAllowedValuesForShowsURL = "https://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
   return getAllowedValuesForShowsURL;
 }
@@ -172,7 +172,7 @@ function doAddShow(showToAdd) {
 //     console.log(showToAdd);
 //     let passingInBody = {
 //       "$xmlns": {
-//         "plfield": "http://xml.theplatform.com/data/object/Field"
+//         "plfield": "https://xml.theplatform.com/data/object/Field"
 //       },
 //       "plfield$dataStructure": "Single",
 //       "plfield$defaultValue": "",
@@ -180,9 +180,9 @@ function doAddShow(showToAdd) {
 //       "plfield$allowedValues": arrayShows,
 //       "plfield$notifyAlways": false,
 //       "plfield$length": 0,
-//       "id": "http://data.media.theplatform.com/media/data/Media/Field/214169463",
+//       "id": "https://data.media.theplatform.com/media/data/Media/Field/214169463",
 //       "guid": "YAD6ewA2DgDfegBA3wwYJcMSGvejuHfI",
-//       "ownerId": "http://access.auth.theplatform.com/data/Account/2686406403",
+//       "ownerId": "https://access.auth.theplatform.com/data/Account/2686406403",
 //       "plfield$dataType": "String"
 //     };
 //     // calls the function doFetchForAddShows, which does the fetch for adding a show, given the body (the message), and the URL

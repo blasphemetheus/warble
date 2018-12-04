@@ -78,7 +78,7 @@ function getData(url = '', data = {}) {
     .then(response => response.json()); // parse response to JSON
 }
 
-// postData('http://google.com/answer', {
+// postData('https://google.com/answer', {
 //     answer: 42
 //   })
 //   .then(data => console.log(JSON.stringify(data))) // JSON-string from 'response.json()' call

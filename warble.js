@@ -14,7 +14,7 @@ if (isSignedIn() && isInAccount()) { // if we got all the info we need ...
 
 // returns the URL to get the existing shows given a token and a customfield_identifier
 function urlToGetShows(token, cf_identifier) {
-  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
+  const getAllowedValuesForShowsURL = "https://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
   return getAllowedValuesForShowsURL;
 }
