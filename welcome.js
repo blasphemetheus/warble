@@ -11,7 +11,6 @@ logSession();
 // this is that logic
 if (!isSignedIn()) { // No, not signed in
   console.log('User is signedOut');
-  console.log('Redirecting you to login.html to sign in');
   window.location.href = 'login.html';
   // // just do this to generate html (adds a SignIn button to end of file)
   // displayLinkToSignIn();
@@ -41,9 +40,7 @@ function reload() {
 // stores a custom field for the selected account should one exist
 function storeCustomFieldIfExistsThenRedirect() { // TODO: FIX THIS
   let acc = JSON.parse(accessAccount());
-  console.log(acc);
   let shortID = acc.currentAccountID;
-  console.log(shortID);
 
   let th = accessSignIn();
   console.log(th);
@@ -56,7 +53,6 @@ function storeCustomFieldIfExistsThenRedirect() { // TODO: FIX THIS
   let urlOneAccount = "http://data.media.theplatform.com/media/data/Media/Field" + "?byFieldName=show" +
     "&token=" + token + "&account=" + longAccountID +
     "&schema=1.8.0&fields=id%2Ctitle%24allowedValues&form=json";
-  console.log(urlOneAccount);
 
   // this fetches  the stuff at the url that will return one account
   fetch(urlOneAccount)
@@ -93,19 +89,19 @@ function storeCustomFieldIfExistsThenRedirect() { // TODO: FIX THIS
 } // TODO: FIX THIS
 
 
-// the fuction that gets called when user presses the warble button after choosing everything
-function checkYouSure() {
-  console.log('you checked, and were sure');
-  // make sure all this stuff is saved in sessionStorage ???
-  // to catch any weird errors, just check that these things
-  if (isSignedIn() && isInAccount() && isInTask()) {
-    // redirect to warble.js, which is where we will do tasks. For now only add an allowedValue to Shows
-    window.location.href = 'warble.html';
-  } else { // if you got here in the ifs, I don't know what went wrong, logic or my brain has broken
-    logSession();
-    new Error('Yo something went wrong, the stuff stored is not totally correct, check console for logs');
-  }
-}
+// // the function that gets called when user presses the warble button after choosing everything
+// function checkYouSure() {
+//   console.log('you checked, and were sure');
+//   // make sure all this stuff is saved in sessionStorage ???
+//   // to catch any weird errors, just check that these things
+//   if (isSignedIn() && isInAccount() && isInTask()) {
+//     // redirect to warble.js, which is where we will do tasks. For now only add an allowedValue to Shows
+//     window.location.href = 'warble.html';
+//   } else { // if you got here in the ifs, I don't know what went wrong, logic or my brain has broken
+//     logSession();
+//     new Error('Yo something went wrong, the stuff stored is not totally correct, check console for logs');
+//   }
+// }
 
 // ... -------------------- ... //
 // ... -------------------- ... //
@@ -135,38 +131,6 @@ function clearStuff() {
 
 // ... -------------------- ... //
 
-/*
-<script>
-  // this function happens before redirect, if the redirect is ok to happen,
-  // return true, else return false and it will not occur
-  function happensBeforeRedirect() {
-    var e = document.getElementById("iamtheselectmenu");
-    var strUser = e.options[e.selectedIndex].value;
-    alert(strUser);
-
-    if (strUser != "spider") {
-      alert("you are not a spider")
-      return false;
-    } else {
-      alert("CONGRATS YOU ARE A SPIDER.  PASS THROUGH ....")
-      return true;
-    }
-  }
-</script>
-
-<form action="http://www.google.com" method="GET" onsubmit="return happensBeforeRedirect()">
-  <select id="iamtheselectmenu">
-    <option value="">--Please choose an option--</option>
-    <option value="dog">Dog</option>
-    <option value="cat">Cat</option>
-    <option value="hamster">Hamster</option>
-    <option value="parrot">Parrot</option>
-    <option value="spider">Spider</option>
-    <option value="goldfish">Goldfish</option>
-</select>
-  <input type="submit">
-</form>
-*/
 
 // ---------------------- END memory functionality ----------------- //
 
@@ -397,41 +361,15 @@ function displaySelectAccount() {
         // call the function that we made just to retrieve out the last ten chars from a string
         let shortID = retrieveLastTenChars(element.id);
 
-        // the pid tells us which environment we're in
-        switch (pid) {
-          case 'bSEZRC': // this is dev
-            environment = 'dev';
-            break;
-          case '1RZrUC': // this is stage
-            environment = 'stage';
-            break;
-            // case '';  // this is prod
-            // TODO: fill in the actual environment representation of prod
-            // environment = 'prod';
-            // break;
-          default:
-            environment = 'unknown';
-            new Error('I haven\'t put in the actual prod pid representation yet'); // TODO get rid of this when prod in
-            new Error('unknown environment for given pid', pid);
-        }
+        environment = whichEnvironment(pid); // this is in info.js
 
         let explanation = environment + " \t\t---- " + label + ' \t\t---- ' + shortID + ' \t\t';
-        console.log('index: ', i);
-        console.log('element', element);
 
         let option = document.createElement('option');
         option.setAttribute('value', shortID);
         option.textContent = explanation;
 
         select.appendChild(option);
-
-        // inp.setAttribute('type', 'submit');
-        // inp.setAttribute('name', 'whichAccount');
-        // inp.setAttribute('value', shortID);
-        // inp.setAttribute('shortId', shortID);
-        // inp.setAttribute('PID', pid);
-        // inp.setAttribute('label', label);
-        // inp.setAttribute('onclick', 'this.form.submited=this.value');
       }
 
       f.appendChild(select);
@@ -441,58 +379,6 @@ function displaySelectAccount() {
       f.appendChild(input);
 
       document.body.appendChild(f);
-      // // go through each object in arrayAccounts and create an html representation of it
-      // // with a button after it
-      // arrayAccounts.forEach((element) => {
-      //   // pull out the info from the element (obj with info)
-      //   let pid = element.pid;
-      //   let id = element.id;
-      //   let label = element.label;
-      //   // call the function that we made just to retrieve out the last ten chars from a string
-      //   let shortID = retrieveLastTenChars(element.id);
-      //
-      //   let environment = null;
-      //
-      //   // the pid tells us which environment we're in
-      //   switch (pid) {
-      //     case 'bSEZRC': // this is dev
-      //       environment = 'dev';
-      //       break;
-      //
-      //     case '1RZrUC': // this is stage
-      //       environment = 'stage';
-      //       break;
-      //
-      //       // case '';  // this is prod
-      //       // TODO: fill in the actual environment representation of prod
-      //       // environment = 'prod';
-      //       // break;
-      //     default:
-      //       environment = 'unknown';
-      //       new Error('I haven\'t put in the actual prod pid representation yet'); // TODO get rid of this when prod in
-      //       new Error('unknown environment for given pid', pid);
-      //   }
-      //
-      //   let lab = document.createElement('label');
-      //   lab.innerHTML = environment + " \t\t---- " + label + ' \t\t---- ' + shortID + ' \t\t';
-      //
-      //   // have it print out a <label> with label variable inside of it </label>
-      //   let inp = document.createElement('input');
-      //   inp.setAttribute('type', 'submit');
-      //   inp.setAttribute('name', 'whichAccount');
-      //   inp.setAttribute('value', shortID);
-      //   inp.setAttribute('shortId', shortID);
-      //   inp.setAttribute('PID', pid);
-      //   inp.setAttribute('label', label);
-      //   inp.setAttribute('communicated', shortID);
-      //   inp.setAttribute('onclick', 'this.form.submited=this.value');
-      //   inp.setAttribute('style', 'align-content: inherit;');
-      //
-      //
-      //   document.getElementById('selectAccountForm').appendChild(lab);
-      //   document.getElementById('selectAccountForm').appendChild(inp);
-      //   document.getElementById('selectAccountForm').appendChild(document.createElement('br'));
-      // }); // end of foreach of arrayAccounts
     })
     .catch((error) => console.error(error)); // end of then fn (like onload)
 } // end of displaySelectAccount() fn
@@ -540,25 +426,3 @@ function boom() {
 function retrieveLastTenChars(longId) {
   return longId.substring(longId.length - 10, longId.length);
 }
-
-
-// function addEventListeners() {
-//   let attemptPickAccount = document.querySelector('selectAccountForm');
-//
-//   if (attemptPickAccount == null) {
-//     new Error('attemptPickAccount is null, nothing with id selectAccountForm ')
-//   } else {
-//     /// add an event listener
-//     attemptPickAccount.addEventListener('click', checkPickAccount);
-//   }
-//
-//   let attemptLogin = document.querySelector('attemptLogin');
-//   if (attemptLogin == null) {
-//     new Error('attemptLogin is null, nothing with id attemptLogin');
-//   } else {
-//     /// add an event listener
-//     loginAttempt.addEventListener('click', checkLogin);
-//   }
-// }
-//
-// addEventListeners();
