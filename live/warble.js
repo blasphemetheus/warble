@@ -54,9 +54,16 @@ function init_AddShow() {
   }
 
   let d = document.createElement('div');
-  d.innerHTML = '<h1> Add a show </h1>' + '<hr> <p>Be sure before you press Add.</p> ' +
-    '<p>Everything is case sensitive. </p>' + '<p><i>Adding a Show will only work if you have admin priveleges for this account</i></p>';
+  d.innerHTML = '<h1> Add or Remove a show </h1>' + '<hr> <p>Be sure before you press any buttons.</p> ' +
+    '<p>Everything is case sensitive. </p>' + '<p><i>Adding or Removing a Show will only work if you have admin priveleges for this account</i></p>';
   document.body.appendChild(d);
+
+
+  // add remove shows button
+  let rmButton = document.createElement('button');
+  rmButton.textContent = 'I want to remove a show';
+  rmButton.setAttribute('onclick', 'submitRemoveShow();')
+  document.body.appendChild(rmButton);
 
   // append form to body that allows you to click it,
   // a 'you sure' function activates which displays info including your input and which account

@@ -1,52 +1,6 @@
-// TODO: remove show
-// TODO: If stuff changes in the future then these values will change,
-//     should put in a json file or something? or at least obfuscate code
-
-
+// TODO: obfuscate cookies
 
 // const APPEND_TO_MAKE_FULL_ID = "https://data.media.theplatform.com/media/data/Media/Field/";
-//
-// const DEV_MAIN_ACCOUNT = "2686406403";
-// const DEV_MAIN_ACCOUNT_CF_SHOWS = "214169463";
-//
-// const STAGE_AMC = '2649273223';
-// const STAGE_AMC_CF_SHOWS = '155289480';
-//
-// const STAGE_WETV = '2676155873';
-// const STAGE_WETV_CF_SHOWNAME = '183961471';
-//
-// const STAGE_IFC = '2665992905';
-// const STAGE_IFC_CF_SHOWNAME = '179353621';
-//
-// const STAGE_BBCA = '2665992175';
-// const STAGE_BBCA_CF_SHOWNAME = '182425513';
-//
-// const STAGE_SUNDANCE_TV = '2685731763';
-// const STAGE_SUNDANCE_TV_CF_SHOWNAME = '299161469';
-//
-// const STAGE_GENERAL = '2494403701'; // HAS NO such field
-// const STAGE_ADS_REPO = '2666065425'; // HAS NO such field
-// const STAGE_REF_2POINT0 = '2702809055'; // HAS NO such field
-//
-// const STAGE_ASSET_REPO = '2703280093';
-// const STAGE_ASSET_REPO_CF_SHOWS = '359577460';
-//
-// const PROD_AMC = "2649321885";
-// const PROD_AMC_CF_SHOWS = "156313528";
-//
-// const PROD_WETV = '2676155197';
-// const PROD_WETV_CF_SHOWS = '185497559';
-//
-// const PROD_BBCA = '2675820809';
-// const PROD_BBCA_CF_SHOWS = '183961462';
-//
-// const PROD_IFC = '2673068635';
-// const PROD_IFC_CF_SHOWS = '180889499';
-//
-// const PROD_SUNDANCE_TV = '2685731137';
-// const PROD_SUNDANCE_TV_CF_SHOWS = '233113468';
-
-// alternate ways of storing this
 
 // returns the url to add a show given a token
 function urlToAddShow(token) {
@@ -81,9 +35,26 @@ function bodyOfAddShow(accountID, arrayShows, cf_id) {
 }
 
 
-// this function actually adds the show (making ajax calls, responds to them etc)
-function doAddShow(showToAdd) {
-  console.log('actually adding show', showToAdd);
+// checkInput (either for removing or adding a show). given  Returns the
+function validateInput(showSpecified, operation) {
+  if (operation != 'add' && operation != 'remove') {
+    throw new Error('You are trying to validate Input (' + showSpecified + ')with an invalid operation (' + operation + ')');
+  }
+
+  if (typeof showSpecified == "undefined") {
+    throw new Error('Ooops didn\'t pass in a show to ' + operation + ': ' + showSpecified);
+  }
+  if (typeof showSpecified != "string") {
+    throw new Error('Hey, the type of the thing you\'re passing into' + operation + 'Show is not a string: ' + showSpecified);
+  }
+  if (showSpecified == "") {
+    throw new Error('Hey, the show you are trying to ' + operation + ' is an empty string, do not do that: ' + showSpecified);
+  }
+}
+
+// this function actually removes a show (making ajax calls, error check, initiate html changes, etc)
+function doRemoveShow(showToRemove) {
+  console.log('actually removing show', showToRemove);
 
   // assemble data, put into object. rn: (token, account, task) are the fields
   let object = pullOutStuffForAddShow();
@@ -91,15 +62,87 @@ function doAddShow(showToAdd) {
   let tok = object.token;
   let acc = object.accountID;
 
-  //------- define / grab stuff
+  // retrieve the account number
+  const cf_identifier = getCustomFieldForAccount(acc);
+  // check for null and undefined
+  // these error cases should be covered by checking in init_AddShow, so this is
+  // just in case these functions are called in the incorrect order or a random
+  // mutation occurs that I didn't account for
+  if (cf_identifier === undefined) {
+    throw new Error('Trying to fetch custom field for an account that Warble does not know about, account is: ', acc);
+  }
+  if (cf_identifier === null) {
+    throw new Error('Trying to get Custom Field for the account specified (' + acc + ') and it does not have a customField for Shows');
+  }
 
+  //------- check the show passed in
+  validateInput(showToRemove, 'remove');
+
+  //------- get existing shows
+  let getExistingURL = urlToGetShows(tok, cf_identifier);
+  console.log('get-existing-shows URL', getExistingURL);
+  let removeShowURL = urlToAddShow(tok);
+  console.log('remove-show URL', removeShowURL);
+
+  // add the response to the initial existingShows request to html
+  //
+  // this next bit pulls out the existing shows and adds the one we want to add to an array representation of it, then sorts it
+  let arrayShows = accessExistingShowsOnce(); // pull out allowedValues
+  console.log(arrayShows);
+  // find showToRemove in the array
+  //    if its there
+  //        then remove it, sort array
+  //    else
+  //        return false (the show to remove wasn't there)
+  //          (or throw new error if ya want)
+
+  // Find the index position of showToRemove, then remove one element from that position
+  let index = arrayShows.indexOf(showToRemove);
+  if (index == -1) {
+    return false;
+    throw new Error('could not remove show because show was not there');
+  } else {
+    arrayShows.splice(index, 1);
+    arrayShows.sort(); // alphabetize the array of shows
+  }
+  // arrayShows.splice(arrayShows.indexOf(showToRemove), 1);
+
+  // now we generate the body of the removeShow POST request
+  let removeShowBody = bodyOfAddShow(acc, arrayShows, cf_identifier);
+  console.log('remove-show BODY', removeShowBody);
+
+  fireOffModifyAllowedValuesForShownamesRequest(removeShowURL, removeShowBody);
+}
+
+// this does the actual fetch
+function fireOffModifyAllowedValuesForShownamesRequest(url, body) {
+  // does the fetch for POSTing the new body
+  fetch(url, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json",
+      }
+    }).then(res => res.json())
+    .then(data => {
+      console.log('Retrieved Response: ', JSON.stringify(data))
+      // refresh page after post request (which will display the new existing shows)
+      window.location.href = 'warble.html';
+    })
+    .catch(error => console.error(error)); // catch errors for the fetch
+}
+
+
+// this function actually adds the show (making ajax calls, responds to them etc)
+function doAddShow(showToAdd) {
   // showToAdd is passed in, should be a string
+  console.log('actually adding show', showToAdd);
 
   // assemble data, put into object. rn: (token, account, task) are the fields
-  // let world = pullOutStuffForAddShow();
-  // console.log('Our Info', world);
-  // let token = object.token;
-  // let account = object.accountID;
+  let object = pullOutStuffForAddShow();
+  console.log('Our Info', object);
+  let tok = object.token;
+  let acc = object.accountID;
 
   // retrieve the account number
   let cf_identifier = getCustomFieldForAccount(acc);
@@ -115,17 +158,7 @@ function doAddShow(showToAdd) {
   }
 
   //------- check the stuff we grabbed
-
-  if (typeof showToAdd == "undefined") {
-    console.error('Ooops didn\'t pass in a showToAdd');
-  }
-  // (make sure showToAdd is a string, throw error if it isn't)
-  if (typeof showToAdd != "string") {
-    throw new Error('Hey, the type of the thing you\'re passing into addShow is not a string');
-  }
-  if (showToAdd == "") {
-    throw new Error('Hey, the show you are trying to add is an empty string, do not do that');
-  }
+  validateInput(showToAdd, 'add');
 
   //------- get existing shows
   let getExistingURL = urlToGetShows(tok, cf_identifier);
@@ -144,85 +177,25 @@ function doAddShow(showToAdd) {
   console.log('add-show BODY', addShowBody);
 
   //======= asynchronously fetch to POST add show
-  // TODO
-  // does the fetch for adding a show, given the body (the message), and the URL
-  fetch(addShowURL, {
-      method: "POST",
-      body: JSON.stringify(addShowBody),
-      headers: {
-        "Content-Type": "application/json",
-      }
-    }).then(res => res.json())
-    .then(data => {
-      console.log('Retrieved Response: ', JSON.stringify(data))
-      // refresh page after post request (which will display the new existing shows)
-      window.location.href = 'warble.html';
-    })
-    .catch(error => console.error(error)); // catch errors for the addShow fetch
+  fireOffModifyAllowedValuesForShownamesRequest(addShowURL, addShowBody);
 }
-
-// // get allowedvalues for shows, build the body of the json you're gonna post later and return it as an object
-// fetch(getAllowedValuesForShowsURL)
-//   .then(response => response.json())
-//   .then(data => {
-//     let arrayShows = data.allowedValues;
-//     arrayShows.push(showToAdd);
-//     arrayShows.sort();
-//     console.log('AAA', arrayShows);
-//     console.log(showToAdd);
-//     let passingInBody = {
-//       "$xmlns": {
-//         "plfield": "https://xml.theplatform.com/data/object/Field"
-//       },
-//       "plfield$dataStructure": "Single",
-//       "plfield$defaultValue": "",
-//       "title": "Show",
-//       "plfield$allowedValues": arrayShows,
-//       "plfield$notifyAlways": false,
-//       "plfield$length": 0,
-//       "id": "https://data.media.theplatform.com/media/data/Media/Field/214169463",
-//       "guid": "YAD6ewA2DgDfegBA3wwYJcMSGvejuHfI",
-//       "ownerId": "https://access.auth.theplatform.com/data/Account/2686406403",
-//       "plfield$dataType": "String"
-//     };
-//     // calls the function doFetchForAddShows, which does the fetch for adding a show, given the body (the message), and the URL
-//     doFetchForAddShows(passingInBody, addShowURL);
-//   })
-//   .catch(error => console.error(error));
-
-//   /* EXAMPLES OF FAILURE AND SUCCESS JSON STRUCTURES
-//
-//     // SUCCESS
-//
-//     {
-//       "signInResponse":
-//       {
-//         "duration":315360000000,
-//         "token":"NJxrjMYGFHne3_VSj5pksUCuoLDswCDG",
-//         "userId":"https://identity.auth.theplatform.com/idm/data/User/mpx/2765720",
-//         "idleTimeout":120960000,
-//         "userName":"iamdanielmeyer@gmail.com"
-//       }
-//     }
-//
-//     // FAIL
-//
-//     {
-//       "responseCode": 401,
-//       "title": "com.theplatform.authentication.api.exception.AuthenticationException",
-//       "isException": true,
-//       "correlationId": "63660a30-1bde-4307-a828-4d9626d62b75",
-//       "description": "Either 'iamdanielmeyer@gmail.com' does not have an account with this site, or the password was incorrect."
-//     }
-//   */
-//
 
 // displays a prompt with the show you selected as the default value, and calls doAddShow with the value of the prompt when submitted
 // this function is a called when you are adding a show and the user presses 'Add'
 function submitAddShow() {
   let showToAdd = document.getElementById('addShowInput').value;
-  let promptResponse = prompt("~Be positive before pressing OK~", showToAdd);
+  let promptResponse = prompt("Adding Show ~Be positive before pressing OK~", showToAdd);
   if (promptResponse != null) {
     doAddShow(promptResponse);
+  }
+}
+
+// displays a prompt and calls doRemoveShow with the value of the prompt when submitted
+// this function is a called when you press a button that says 'I want to remove a show'
+function submitRemoveShow() {
+  let showToRemove = '';
+  let promptResponse = prompt("Removing Show ~Be positive before pressing OK~", showToRemove);
+  if (promptResponse != null) {
+    doRemoveShow(promptResponse);
   }
 }
