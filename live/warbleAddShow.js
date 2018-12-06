@@ -223,6 +223,6 @@ function submitAddShow() {
   let showToAdd = document.getElementById('addShowInput').value;
   let promptResponse = prompt("~Be positive before pressing OK~", showToAdd);
   if (promptResponse != null) {
-    doAddShow(showToAdd);
+    doAddShow(promptResponse);
   }
 }
