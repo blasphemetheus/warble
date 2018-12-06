@@ -6,22 +6,52 @@ displayStatusInHTML();
 // logic to decide what to display based on what our worldstate is like
 if (isSignedIn() && isInAccount()) { // if we got all the info we need ...
   // populate the html doc for adding/removing shows
-  init_AddShow()
+  init_AddShow();
 } else { // if we didn't get all the info we need ...
   // send em back to welcome.html
-  console.log("you don't have all the info you need, sending you back to welcome.html");
   window.location.href = "welcome.html";
 }
 
 // returns the URL to get the existing shows given a token and a customfield_identifier
 function urlToGetShows(token, cf_identifier) {
-  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
+  const getAllowedValuesForShowsURL = "https://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
   return getAllowedValuesForShowsURL;
 }
 
 // A function that displays the stuff necessary to start adding one show (exactly as input) to the allowedValues array within the customField Show
 function init_AddShow() {
+  // PUT ALL OUR INFO ON THE TABLE
+  let obj = pullOutStuffForAddShow();
+  let token = obj.token;
+  let account = obj.accountID;
+  let task = obj.task;
+
+
+  const customFieldNumber = getCustomFieldForAccount(account);
+  // check for null and undefined
+  if (customFieldNumber === undefined) {
+    console.error('Trying to fetch custom field for an account that Warble does not know about -- account is: ', account);
+  }
+
+  if (customFieldNumber === null) {
+    console.log('Trying to get Custom Field for the account specified (' + account + ') and it does not have a customField for Shows');
+    // since the custom_field_id is null for our account, we don't want to continue.
+    // We want to Display - The Account You Selected has no Custom Field recorded for the Account
+
+    let p = document.createElement('p');
+    p.textContent = 'The Account you selected has no recorded custom field representing Shows: ' + account;
+    p.setAttribute('style', 'color:red');
+
+    document.body.appendChild(p);
+
+    let h = document.createElement('h1');
+    h.textContent = 'Please Select A Different Account';
+
+    document.body.appendChild(h);
+    return;
+  }
+
   // if the account we're working with has the ability to add a show, then we'll display the option to, otherwise we display 'cant add show'
   if (!canAddShow()) { // can't add show
     let sry = document.createElement('p');
@@ -32,7 +62,7 @@ function init_AddShow() {
 
     let d = document.createElement('div');
     d.innerHTML = '<h1> Add a show </h1>' + '<hr> <p>Be sure before you press Add.</p> ' +
-      '<p>Everything is case sensitive. </p>';
+      '<p>Everything is case sensitive. </p>' + '<p><i>Adding a Show will only work if you have admin priveleges for this account</i></p>';
     document.body.appendChild(d);
 
     // append form to body that allows you to click it,
@@ -42,17 +72,9 @@ function init_AddShow() {
     // This is an async function that does all the stuff asynchroniously, will populate some stuff in html
     //makes request to get existing shows, then adds them in the form of a (string) to the html in the alert id
 
-    // PUT ALL OUR INFO ON THE TABLE
-    let obj = pullOutStuffForAddShow();
-    console.log('Obj', obj);
-    let token = obj.token;
-    let account = obj.accountID;
-    let task = obj.task;
-
 
     // retrieve the account number
 
-    const customFieldNumber = getCustomFieldForAccount(account);
     const existingShowsURL = urlToGetShows(token, customFieldNumber);
 
     // GETS EXISTING SHOWS AND LISTS THEM
@@ -60,10 +82,8 @@ function init_AddShow() {
     fetch(existingShowsURL)
       .then(response => response.json())
       .then(data => {
-        console.log(JSON.stringify(data));
         let arrayShows = data.allowedValues;
         storeExistingShows(arrayShows); // STORES THE EXISTING SHOWS SO WE CAN access EM ONCE AND THAT's IT
-        console.log('Existing Shows: ', arrayShows);
         //parses the data (response and puts the result in a var we'll call Readable)
         let readable = "\n";
         // runs through the arrayShows
@@ -194,34 +214,34 @@ function pullOutStuffForAddShow() {
   return object;
 }
 
-function displayYouSure() {
-  // display all the info we got in the html (json form and interpreted), asks if this is what you want,
-  // displays a button with 'i'm sure' on it that hits a function that sends us to warble.html
-  console.log('asking user: you sure bout this? <displays data>');
-
-  // the form element (big)
-  let yousure = document.createElement('form');
-  yousure.setAttribute('class', 'YouSureForm');
-  yousure.textContent = 'You sure?';
-
-  let linebreak = document.createElement('br');
-
-  // a div with json bit
-  let explanation = document.createElement('div');
-  explanation.textContent = 'This is what you input: ';
-
-  let displayPlain = document.createElement('p');
-  displayPlain.textContent = worldState('plain');
-
-  let warble = document.createElement('button');
-  warble.setAttribute('onclick', 'checkYouSure();');
-  warble.innerHTML = 'Move On';
-
-  document.body.appendChild(yousure);
-  document.body.appendChild(linebreak);
-  document.body.appendChild(explanation);
-  document.body.appendChild(linebreak);
-  document.body.appendChild(displayPlain);
-
-  document.body.appendChild(warble);
-}
+// function displayYouSure() {
+//   // display all the info we got in the html (json form and interpreted), asks if this is what you want,
+//   // displays a button with 'i'm sure' on it that hits a function that sends us to warble.html
+//   console.log('asking user: you sure bout this? <displays data>');
+//
+//   // the form element (big)
+//   let yousure = document.createElement('form');
+//   yousure.setAttribute('class', 'YouSureForm');
+//   yousure.textContent = 'You sure?';
+//
+//   let linebreak = document.createElement('br');
+//
+//   // a div with json bit
+//   let explanation = document.createElement('div');
+//   explanation.textContent = 'This is what you input: ';
+//
+//   let displayPlain = document.createElement('p');
+//   displayPlain.textContent = worldState('plain');
+//
+//   let warble = document.createElement('button');
+//   warble.setAttribute('onclick', 'checkYouSure();');
+//   warble.innerHTML = 'Move On';
+//
+//   document.body.appendChild(yousure);
+//   document.body.appendChild(linebreak);
+//   document.body.appendChild(explanation);
+//   document.body.appendChild(linebreak);
+//   document.body.appendChild(displayPlain);
+//
+//   document.body.appendChild(warble);
+// }

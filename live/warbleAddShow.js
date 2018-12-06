@@ -1,151 +1,52 @@
-// function doFetchForAddShows(body, urlToAddShows) {
-//   console.log('DID IT WORK', body);
-//   //TODo: Set passingInBody = {thejsonwespecify}
-//
-//   // // put response in html (body)
-//   // let response = document.createElement('div');
-//   // response.setAttribute('id', 'response');
-//   // response.style = 'color=green;';
-//   // document.body.appendChild(response);
-//   //
-//   // // pull out the thing we just put in html and set responseText as it
-//   // var responseText = document.getElementById('response');
-//   //
-//   // if (showToAdd == '') {
-//   //   responseText.innerHTML = 'you didn\'t enter in anything for your Show To Add, try again pls, enter stuff this time';
-//   // }
-//
-//   fetch(urlToAddShows, {
-//       method: "POST",
-//       body: JSON.stringify(body),
-//       headers: {
-//         "Content-Type": "application/json",
-//       }
-//     }).then(res => res.json())
-//     .then(data => {
-//       console.log('Success: ', JSON.stringify(data))
-//       // refresh page
-//       window.location.href = 'warble.html';
-//     })
-//     .catch(error => console.error(error));
-// }
-
-
 // TODO: remove show
-// TODO display whether
-// TODO If stuff changes in the future then these values will change,
+// TODO: If stuff changes in the future then these values will change,
 //     should put in a json file or something? or at least obfuscate code
-const APPEND_TO_MAKE_FULL_ID = "http://data.media.theplatform.com/media/data/Media/Field/";
-
-const DEV_MAIN_ACCOUNT = "2686406403";
-const DEV_MAIN_ACCOUNT_CF_SHOWS = "214169463";
-
-const STAGE_AMC = '2649273223';
-const STAGE_AMC_CF_SHOWS = '155289480';
-
-const STAGE_WETV = '2676155873';
-const STAGE_WETV_CF_SHOWNAME = '183961471';
-
-const STAGE_IFC = '2665992905';
-const STAGE_IFC_CF_SHOWNAME = '179353621';
-
-const STAGE_BBCA = '2665992175';
-const STAGE_BBCA_CF_SHOWNAME = '182425513';
-
-const STAGE_SUNDANCE_TV = '2685731763';
-const STAGE_SUNDANCE_TV_CF_SHOWNAME = '299161469';
-
-const STAGE_GENERAL = '2494403701'; // HAS NO such field
-const STAGE_ADS_REPO = '2666065425'; // HAS NO such field
-const STAGE_REF_2POINT0 = '2702809055'; // HAS NO such field
-
-const STAGE_ASSET_REPO = '2703280093';
-const STAGE_ASSET_REPO_CF_SHOWS = '359577460';
-
-const PROD_MAIN_ACCOUNT = "2649321885";
-// const PROD_MAIN_ACCOUNT_CF_SHOWS = "156313528"; //TODO: TO ENABLE PROD uncomment this (for the main account only)
 
 
-/* alternate ways of storing this
-var myMap = new Map([ // account_id, customfield_id (if null there isn't one)
-  [2686406403, 214169463], //DEV_MAIN_ACCOUNT
-  [2649273223, 155289480], //STAGE_AMC
-  [2676155873, 183961471], //STAGE_WETV
-  [2665992905, 179353621], //STAGE_IFC
-  [2665992175, 182425513], //STAGE_BBCA
-  [2685731763, 299161469], //STAGE_SUNDANCE_TV
-  [2703280093, 359577460], //STAGE_ASSET_REPO
-  [2494403701, null], //STAGE_GENERAL
-  [2666065425, null], //STAGE_ADS_REPO
-  [2702809055, null], // STAGE_REF_2POINT0
-  [2649321885, 156313528], //PROD_MAIN_ACCOUNT
-]);
 
+// const APPEND_TO_MAKE_FULL_ID = "https://data.media.theplatform.com/media/data/Media/Field/";
+//
+// const DEV_MAIN_ACCOUNT = "2686406403";
+// const DEV_MAIN_ACCOUNT_CF_SHOWS = "214169463";
+//
+// const STAGE_AMC = '2649273223';
+// const STAGE_AMC_CF_SHOWS = '155289480';
+//
+// const STAGE_WETV = '2676155873';
+// const STAGE_WETV_CF_SHOWNAME = '183961471';
+//
+// const STAGE_IFC = '2665992905';
+// const STAGE_IFC_CF_SHOWNAME = '179353621';
+//
+// const STAGE_BBCA = '2665992175';
+// const STAGE_BBCA_CF_SHOWNAME = '182425513';
+//
+// const STAGE_SUNDANCE_TV = '2685731763';
+// const STAGE_SUNDANCE_TV_CF_SHOWNAME = '299161469';
+//
+// const STAGE_GENERAL = '2494403701'; // HAS NO such field
+// const STAGE_ADS_REPO = '2666065425'; // HAS NO such field
+// const STAGE_REF_2POINT0 = '2702809055'; // HAS NO such field
+//
+// const STAGE_ASSET_REPO = '2703280093';
+// const STAGE_ASSET_REPO_CF_SHOWS = '359577460';
+//
+// const PROD_AMC = "2649321885";
+// const PROD_AMC_CF_SHOWS = "156313528";
+//
+// const PROD_WETV = '2676155197';
+// const PROD_WETV_CF_SHOWS = '185497559';
+//
+// const PROD_BBCA = '2675820809';
+// const PROD_BBCA_CF_SHOWS = '183961462';
+//
+// const PROD_IFC = '2673068635';
+// const PROD_IFC_CF_SHOWS = '180889499';
+//
+// const PROD_SUNDANCE_TV = '2685731137';
+// const PROD_SUNDANCE_TV_CF_SHOWS = '233113468';
 
-var myArray = {
-  allowedAccounts: [
-    '2686406403', //DEV_MAIN_ACCOUNT
-    '2649273223', //STAGE_AMC
-    '2676155873', //STAGE_WETV
-    '2665992905', //STAGE_IFC
-    '2665992175', //STAGE_BBCA
-    '2685731763', //STAGE_SUNDANCE_TV
-    '2703280093', //STAGE_ASSET_REPO
-    '2649321885' //PROD_MAIN_ACCOUNT
-  ],
-  existingAccountsNoCF: [
-    '2494403701', //STAGE_GENERAL
-    '2666065425', //STAGE_ADS_REPO
-    '2702809055' //STAGE_REF_2POINT0
-  ],
-  allowedCustomFields: [ // all these are CF of the account
-    '214169463', // DEV_MAIN_ACCOUNT
-    '155289480', //STAGE_AMC
-    '183961471', //STAGE_WETV
-    '179353621', //STAGE_IFC
-    '182425513', //STAGE_BBCA
-    '299161469', //STAGE_SUNDANCE_TV
-    '359577460', //STAGE_ASSET_REPO
-    '156313528' //PROD_MAIN_ACCOUNT
-  ]
-}
-*/
-
-// returns as a string the custom field Shows number for the given account number. or "" with error thrown
-function getCustomFieldForAccount(account) {
-  // this bit is us telling it which customField number to use in the link
-  let cfNumber = "";
-  switch (account) {
-    case DEV_MAIN_ACCOUNT:
-      return DEV_MAIN_ACCOUNT_CF_SHOWS;
-      break;
-    case STAGE_AMC:
-      return STAGE_AMC_CF_SHOWS;
-      break;
-    case STAGE_WETV:
-      return STAGE_WETV_CF_SHOWNAME;
-      break;
-    case STAGE_IFC:
-      return STAGE_IFC_CF_SHOWNAME;
-      break;
-    case STAGE_BBCA:
-      return STAGE_BBCA_CF_SHOWNAME;
-      break;
-    case STAGE_SUNDANCE_TV:
-      return STAGE_SUNDANCE_TV_CF_SHOWNAME;
-      break;
-    case STAGE_ASSET_REPO:
-      return STAGE_ASSET_REPO_CF_SHOWS;
-      break;
-    case PROD_MAIN_ACCOUNT:
-      return PROD_MAIN_ACCOUNT_CF_SHOWS;
-      break;
-    default:
-      throw new Error('Unrecognized account, cannot add shows: ', account);
-      return "";
-      break;
-  }
-}
+// alternate ways of storing this
 
 // returns the url to add a show given a token
 function urlToAddShow(token) {
@@ -159,16 +60,14 @@ function urlToAddShow(token) {
 
 // returns the url to get the existing shows given a token and a customfield_identifier
 function urlToGetShows(token, cf_identifier) {
-  const getAllowedValuesForShowsURL = "http://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
+  const getAllowedValuesForShowsURL = "https://data.media.theplatform.com/media/data/Media/Field/" + cf_identifier +
     "?schema=1.10.0&searchSchema=1.0.0&form=cjson&pretty=true&fields=allowedValues&token=" + token;
   return getAllowedValuesForShowsURL;
 }
 
 // returns an object that will be the body of a post request to allowedValues of a specific 'Show' custom field
 // given an accountID (which account are you making the change  to) and arrayShows (the array of values to make the allowedValues)
-function bodyOfAddShow(accountID, arrayShows) {
-
-  let cf_id = getCustomFieldForAccount(accountID);
+function bodyOfAddShow(accountID, arrayShows, cf_id) {
   console.log('Custom Field Identifier: ', cf_id);
 
   let returnThisObject = {
@@ -204,6 +103,16 @@ function doAddShow(showToAdd) {
 
   // retrieve the account number
   let cf_identifier = getCustomFieldForAccount(acc);
+  // check for null and undefined
+  // these error cases should be covered by checking in init_AddShow, so this is
+  // just in case these functions are called in the incorrect order or a random
+  // mutation occurs that I didn't account for
+  if (cf_identifier === undefined) {
+    throw new Error('Trying to fetch custom field for an account that Warble does not know about, account is: ', acc);
+  }
+  if (cf_identifier === null) {
+    throw new Error('Trying to get Custom Field for the account specified (' + acc + ') and it does not have a customField for Shows');
+  }
 
   //------- check the stuff we grabbed
 
@@ -219,7 +128,6 @@ function doAddShow(showToAdd) {
   }
 
   //------- get existing shows
-
   let getExistingURL = urlToGetShows(tok, cf_identifier);
   console.log('get-existing-shows URL', getExistingURL);
   let addShowURL = urlToAddShow(tok);
@@ -232,10 +140,10 @@ function doAddShow(showToAdd) {
   arrayShows.push(showToAdd); // put new show in there
   arrayShows.sort(); // alphabetize the array of shows
   // now we generate the body of the addShow POST request
-  let addShowBody = bodyOfAddShow(acc, arrayShows);
+  let addShowBody = bodyOfAddShow(acc, arrayShows, cf_identifier);
   console.log('add-show BODY', addShowBody);
 
-  //======= asynchroniously fetch to POST add show
+  //======= asynchronously fetch to POST add show
   // TODO
   // does the fetch for adding a show, given the body (the message), and the URL
   fetch(addShowURL, {
@@ -246,7 +154,7 @@ function doAddShow(showToAdd) {
       }
     }).then(res => res.json())
     .then(data => {
-      console.log('Success: ', JSON.stringify(data))
+      console.log('Retrieved Response: ', JSON.stringify(data))
       // refresh page after post request (which will display the new existing shows)
       window.location.href = 'warble.html';
     })
@@ -264,7 +172,7 @@ function doAddShow(showToAdd) {
 //     console.log(showToAdd);
 //     let passingInBody = {
 //       "$xmlns": {
-//         "plfield": "http://xml.theplatform.com/data/object/Field"
+//         "plfield": "https://xml.theplatform.com/data/object/Field"
 //       },
 //       "plfield$dataStructure": "Single",
 //       "plfield$defaultValue": "",
@@ -272,9 +180,9 @@ function doAddShow(showToAdd) {
 //       "plfield$allowedValues": arrayShows,
 //       "plfield$notifyAlways": false,
 //       "plfield$length": 0,
-//       "id": "http://data.media.theplatform.com/media/data/Media/Field/214169463",
+//       "id": "https://data.media.theplatform.com/media/data/Media/Field/214169463",
 //       "guid": "YAD6ewA2DgDfegBA3wwYJcMSGvejuHfI",
-//       "ownerId": "http://access.auth.theplatform.com/data/Account/2686406403",
+//       "ownerId": "https://access.auth.theplatform.com/data/Account/2686406403",
 //       "plfield$dataType": "String"
 //     };
 //     // calls the function doFetchForAddShows, which does the fetch for adding a show, given the body (the message), and the URL
